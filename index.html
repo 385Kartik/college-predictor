@@ -1,0 +1,3466 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>College Predictor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #fff3e0 0%, #ffecb3 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(45deg, #ffc107 0%, #ff9800 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .form-container {
+            padding: 40px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        input,
+        select {
+            padding: 15px;
+            border: 2px solid #ffe0b3;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #ffd32a;
+            box-shadow: 0 0 0 3px rgba(255, 211, 42, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(45deg, #ff5722, #e64a19);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(230, 74, 25, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(-1px);
+        }
+
+        #results {
+            margin-top: 40px;
+            padding: 30px;
+            background: #fff8e1;
+            border-radius: 15px;
+            border-left: 5px solid #ffd32a;
+        }
+
+        .results-header {
+            background: linear-gradient(45deg, #ffecb3 0%, #ffd54f 100%);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+
+        .category-selection {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .category-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 8px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .category-checkbox:hover {
+            background: #e9ecef;
+        }
+
+        .category-checkbox input:checked+.category-label {
+            font-weight: bold;
+            color: #4facfe;
+        }
+
+        .category-checkbox input:checked {
+            accent-color: #4facfe;
+        }
+
+        .results-header h3 {
+            color: #e65100;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        .student-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .info-item {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 10px 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #ffe0b3;
+        }
+
+        .info-label {
+            font-size: 0.85rem;
+            color: #bf360c;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #e65100;
+            margin-top: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        th {
+            background: linear-gradient(45deg, #ff8f00, #d84315);
+            color: white;
+            padding: 18px 15px;
+            text-align: center;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.9rem;
+        }
+
+        td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #ffe0b3;
+            transition: background-color 0.3s ease;
+        }
+
+        tr:hover td {
+            background-color: #fff8e1;
+        }
+
+        .status-safe {
+            color: #2e7d32;
+            font-weight: 700;
+            background: rgba(46, 125, 50, 0.1);
+            padding: 5px 10px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .status-risky {
+            color: #f57c00;
+            font-weight: 700;
+            background: rgba(245, 124, 0, 0.1);
+            padding: 5px 10px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            background: linear-gradient(45deg, #ffcdd2 0%, #ff8a80 100%);
+            border-radius: 15px;
+            color: #c62828;
+        }
+
+        .no-results h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .note {
+            background: linear-gradient(45deg, #fff3e0 0%, #ffcc02 100%);
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 25px;
+            border: 1px solid #ffb74d;
+        }
+
+        .note strong {
+            color: #e65100;
+            font-size: 1.1rem;
+        }
+
+        .note p {
+            margin: 10px 0;
+            color: #bf360c;
+            line-height: 1.6;
+        }
+
+        .college-count {
+            background: linear-gradient(45deg, #ffd32a, #ff8f00);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 20px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .footer {
+            background: linear-gradient(45deg, #ff9800 0%, #f57c00 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            margin-top: 0;
+        }
+
+        .footer-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .footer h4 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #fff8e1;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .footer p {
+            margin: 8px 0;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .footer .company-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #fff8e1;
+            margin: 15px 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .footer .copyright {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 211, 42, 0.3);
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .footer .contact-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .footer .contact-item {
+            background: rgba(255, 211, 42, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+        }
+
+        .footer .contact-item h5 {
+            color: #ffd32a;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h2 {
+                font-size: 2rem;
+            }
+
+            .form-container {
+                padding: 20px;
+            }
+
+            table {
+                font-size: 0.9rem;
+            }
+
+            th,
+            td {
+                padding: 10px 8px;
+            }
+
+            .footer {
+                padding: 20px;
+            }
+
+            .footer .contact-info {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 211, 42, 0.3);
+            border-top: 4px solid #ffd32a;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>🎓 AI Powered Mumbai University Engineering College Predictor</h2>
+            <p>MHT-CET & JEE College Admission Predictor</p>
+        </div>
+
+        <div class="form-container">
+            <form id="predictorForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="studentName">👤 Student Name:</label>
+                        <input type="text" id="studentName" required placeholder="Enter your full name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="examType">📝 Exam Type: CET</label>
+                        <select id="examType">
+                            <option value="CET">MHT-CET</option>
+                            <!-- <option value="JEE">JEE</option> -->
+                        </select>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="branch">🔧 Branch:</label>
+                        <select id="branch">
+                            <option value="COMPUTERS">Computer Engineering</option>
+                            <option value="IT">Information Technology</option>
+                            <option value="AIDS">AIDS</option>
+                            <option value="AIML">AIML</option>
+                            <option value="EXTC">EXTC</option>
+                            <option value="ECS">Electronics</option>
+                            <option value="MECH">Mechanical</option>
+                            <option value="ELECTRICAL">Electrical</option>
+                            <option value="CIVIL">Civil</option>
+                            <option value="PRODUCTION">Production</option>
+                            <option value="TEXTILE">Textile</option>
+                            <option value="MECHATRONICS">Mechatronics</option>
+                            <option value="VLSI">VLSI</option>
+                            <option value="CSE_DATA_SCIENCE">CSE and Data Science</option>
+                            <option value="ELECTRONICS_VLSI">Electronics and VLSI</option>
+                            <option value="CSE_AIML">CSE and AIML</option>
+                            <option value="CSE_IOT">Computer Science & Engineering (IOT & Cyber Security)</option>
+                            <option value="ELECTRONICS_BIOMEDICAL">Electronics & Biomedical Engineering</option>
+                            <option value="AUTOMOBILE">Automobile Engineering</option>
+
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="percentile">📊 Percentile:</label>
+                        <input type="number" step="0.01" id="percentile" required placeholder="e.g., 95.5">
+                    </div>
+
+                    
+<div class="form-group">
+    <label for="linguisticMinority">🏛️ Linguistic Minority:</label>
+    <select id="linguisticMinority">
+        <option value="ALL">All Colleges</option>
+        <option value="NON_MINORITY">Non-Minority</option>
+        <option value="GUJARATI">Gujarati Minority</option>
+        <option value="MARATHI">Marathi Minority</option>
+        <option value="HINDI">Hindi Minority</option>
+        <option value="URDU">Urdu Minority</option>
+        <option value="ENGLISH">English Minority</option>
+        <option value="TAMIL">Tamil Minority</option>
+        <option value="KANNADA">Kannada Minority</option>
+        <option value="TELUGU">Telugu Minority</option>
+        <option value="MALAYALAM">Malayalam Minority</option>
+        <option value="BENGALI">Bengali Minority</option>
+        <option value="PUNJABI">Punjabi Minority</option>
+        <option value="SINDHI">Sindhi Minority</option>
+        <option value="CHRISTIAN">Christian minority </option>
+        <option value="ROMAN_CATHOLIC_CHRISTIAN">Roman Catholic Christian minority </option>
+        <option value="MUSLIM">Muslim Minority</option>
+        <option value="JAIN">Jain Religious Minority</option>
+        <option value="SINDHI">Sindhi Minority</option>
+    </select>
+</div>
+<div></div>
+                    <div class="form-group">
+                        <label>🏷️ Select Categories to Check:</label>
+                        <div class="category-selection">
+                            <label class="category-checkbox">
+                                <input type="checkbox" value="Open" checked>
+                                <span class="category-label">Open</span>
+                            </label>
+                            <label class="category-checkbox">
+                                <input type="checkbox" value="SC">
+                                <span class="category-label">SC</span>
+                            </label>
+                            <!-- <label class="category-checkbox">
+                                <input type="checkbox" value="ST">
+                                <span class="category-label">ST</span>
+                            </label>
+                            <label class="category-checkbox">
+                                <input type="checkbox" value="OBC">
+                                <span class="category-label">OBC</span>
+                            </label>
+                            <label class="category-checkbox">
+                                <input type="checkbox" value="Ladies">
+                                <span class="category-label">Ladies</span>
+                            </label>
+                            <label class="category-checkbox">
+                                <input type="checkbox" value="TFWS">
+                                <span class="category-label">TFWS</span>
+                            </label>
+                            <label class="category-checkbox">
+                                <input type="checkbox" value="EWS">
+                                <span class="category-label">EWS</span>
+                            </label>
+                            <label class="category-checkbox">
+                                <input type="checkbox" value="MI">
+                                <span class="category-label">Minority</span>
+                            </label> -->
+                        </div>
+                    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    <div class="form-group">
+                    <label style="color: white;"> Select Categories to Check:</label>
+                        <div class="category-selection">
+                            <!-- <label class="category-checkbox">
+                                <input type="checkbox" value="Open" checked>
+                                <span class="category-label">Open</span>
+                            </label>
+                            <label class="category-checkbox">
+                                <input type="checkbox" value="SC">
+                                <span class="category-label">SC</span>
+                            </label> -->
+                            <label class="category-checkbox">
+                                <input type="checkbox" value="ST">
+                                <span class="category-label">ST</span>
+                            </label>
+                            <label class="category-checkbox">
+                                <input type="checkbox" value="OBC">
+                                <span class="category-label">OBC</span>
+                            </label>
+                            <!-- <label class="category-checkbox">
+                                <input type="checkbox" value="Ladies">
+                                <span class="category-label">Ladies</span>
+                            </label>
+                            <label class="category-checkbox">
+                                <input type="checkbox" value="TFWS">
+                                <span class="category-label">TFWS</span>
+                            </label>
+                            <label class="category-checkbox">
+                                <input type="checkbox" value="EWS">
+                                <span class="category-label">EWS</span>
+                            </label>
+                            <label class="category-checkbox">
+                                <input type="checkbox" value="MI">
+                                <span class="category-label">Minority</span>
+                            </label> -->
+                        </div>
+                    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    <div class="form-group">
+                    <label style="color: white;"> Select Categories to Check:</label>
+                        <div class="category-selection">
+                            <!-- <label class="category-checkbox">
+                                <input type="checkbox" value="Open" checked>
+                                <span class="category-label">Open</span>
+                            </label>
+                            <label class="category-checkbox">
+                                <input type="checkbox" value="SC">
+                                <span class="category-label">SC</span>
+                            </label>
+                            <label class="category-checkbox">
+                                <input type="checkbox" value="ST">
+                                <span class="category-label">ST</span>
+                            </label>
+                            <label class="category-checkbox">
+                                <input type="checkbox" value="OBC">
+                                <span class="category-label">OBC</span>
+                            </label> -->
+                            <label class="category-checkbox">
+                                <input type="checkbox" value="Ladies">
+                                <span class="category-label">Ladies</span>
+                            </label>
+                            <label class="category-checkbox">
+                                <input type="checkbox" value="TFWS">
+                                <span class="category-label">TFWS</span>
+                            </label>
+                            <!-- <label class="category-checkbox">
+                                <input type="checkbox" value="EWS">
+                                <span class="category-label">EWS</span>
+                            </label>
+                            <label class="category-checkbox">
+                                <input type="checkbox" value="MI">
+                                <span class="category-label">Minority</span> -->
+                            <!-- </label> -->
+                        </div>
+                    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    <div class="form-group">
+                        <div class="category-selection">
+                            <!-- <label class="category-checkbox">
+                                <input type="checkbox" value="Open" checked>
+                                <span class="category-label">Open</span>
+                            </label>
+                            <label class="category-checkbox">
+                                <input type="checkbox" value="SC">
+                                <span class="category-label">SC</span>
+                            </label>
+                            <label class="category-checkbox">
+                                <input type="checkbox" value="ST">
+                                <span class="category-label">ST</span>
+                            </label>
+                            <label class="category-checkbox">
+                                <input type="checkbox" value="OBC">
+                                <span class="category-label">OBC</span>
+                            </label>
+                            <label class="category-checkbox">
+                                <input type="checkbox" value="Ladies">
+                                <span class="category-label">Ladies</span>
+                            </label>
+                            <label class="category-checkbox">
+                                <input type="checkbox" value="TFWS">
+                                <span class="category-label">TFWS</span>
+                            </label> -->
+                            <label class="category-checkbox">
+                                <input type="checkbox" value="EWS">
+                                <span class="category-label">EWS</span>
+                            </label>
+                            <label class="category-checkbox">
+                                <input type="checkbox" value="MI">
+                                <span class="category-label">Minority</span>
+                            </label>
+                        </div>
+                    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                </div>
+                <button type="submit" class="submit-btn">🔍 Predict My Colleges</button>
+            </form>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Analyzing your data and finding the best colleges...</p>
+            </div>
+        </div>
+
+        <div id="results"></div>
+    </div>
+    <br><br>
+    <!-- Footer HTML -->
+    <div class="footer">
+        <div class="footer-content">
+            <h4>The quality goes in before the name goes on...</h4>
+            <img src="https://www.gettutorials.in/img/logo.png" alt="">
+            <!-- <div class="company-name">Get Tutorials</div> -->
+            <p>Empowering students with data-driven college admission predictions</p>
+
+            <div class="contact-info">
+                <div class="contact-item">
+                    <h5>📧 Email</h5>
+                    <p>gettutorialsengg.com</p>
+                </div>
+                <div class="contact-item">
+                    <h5>📱 Phone</h5>
+                    <p>+91 76200 25240</p>
+                </div>
+                <div class="contact-item">
+                    <a style="text-decoration: none;" href="https://www.gettutorials.in/">
+                        <h5>🌐 Click here</h5>
+                        <p style="color: white;">Website</p>
+                    </a>
+
+                </div>
+            </div>
+
+            <div class="copyright">
+                <p>&copy; 2024 Get Tutorials. All rights reserved.</p>
+                <p>Designed with ❤️ from engineers for aspiring engineers</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const collegeData = [
+            {
+                name: "VJTI, Matunga",
+                linguisticMinority: "NON_MINORITY",
+                branches: {
+                    COMPUTERS: {
+                        CET: {
+                            Round1: { Open: 99.964, SC: 99.2557, ST: 96.7628, OBC: 99.9035, Ladies: 99.9475, TFWS: 99.941, EWS: 99.8213 },
+                            Round2: { Open: 99.9620, SC: 99.2933, ST: 96.6007, OBC: 99.8581, Ladies: 99.9475, TFWS: 99.9328, EWS: 99.8213 },
+                            Round3: { Open: 99.9620, SC: 99.29329, ST: 96.60073, OBC: 99.8581, Ladies: 99.9434, TFWS: 99.93279, EWS: 99.8213 }
+                        },
+                        JEE: {
+                            Round1: { Open: 99.9194, SC: 95.5, ST: 92.0, OBC: 98.5, Ladies: 99.0, TFWS: 98.8, EWS: 99.2 },
+                            Round2: { Open: 99.8500, SC: 95.0, ST: 91.5, OBC: 98.0, Ladies: 98.5, TFWS: 98.3, EWS: 98.8 },
+                            Round3: { Open: 99.8000, SC: 94.5, ST: 91.0, OBC: 97.5, Ladies: 98.0, TFWS: 98.0, EWS: 98.5 }
+                        }
+                    },
+                    IT: {
+                        CET: {
+                            Round1: { Open: 99.9197, SC: 99.0401, ST: 95.5118, OBC: 99.7548, Ladies: 99.8504, TFWS: 99.8701, EWS: 99.7240 },
+                            Round2: { Open: 99.9194, SC: 98.7464, ST: 95.5118, OBC: 99.7548, Ladies: 99.8436, TFWS: 99.8432, EWS: 99.7240 },
+                            Round3: { Open: 99.9194, SC: 98.74641, ST: 95.51178, OBC: 99.7718, Ladies: 99.8432, TFWS: 99.8432, EWS: 99.7240 }
+                        },
+                        JEE: {
+                            Round1: { Open: 99.8500, SC: 94.0, ST: 90.0, OBC: 97.5, Ladies: 98.5, TFWS: 98.0, EWS: 98.8 },
+                            Round2: { Open: 99.8000, SC: 93.5, ST: 89.5, OBC: 97.0, Ladies: 98.0, TFWS: 97.5, EWS: 98.3 },
+                            Round3: { Open: 99.7500, SC: 93.0, ST: 89.0, OBC: 96.5, Ladies: 97.5, TFWS: 97.0, EWS: 98.0 }
+                        }
+                    },
+                    EXTC: {
+                        CET: {
+                            Round1: { Open: 99.7240, SC: 97.8889, ST: 92.8099, OBC: 99.5366, Ladies: 99.6051, TFWS: 99.7812, EWS: 99.3950 },
+                            Round2: { Open: 99.6873, SC: 97.6203, ST: 92.8099, OBC: 99.4239, Ladies: 99.6352, TFWS: 99.680, EWS: 99.3102 },
+                            Round3: { Open: 99.6870, SC: 97.62026, ST: 92.1948, OBC: 99.50546, Ladies: 99.6352, TFWS: 99.680, EWS: 99.3101729 }
+                        },
+                        JEE: {
+                            Round1: { Open: 99.5000, SC: 92.0, ST: 87.0, OBC: 96.0, Ladies: 97.0, TFWS: 96.5, EWS: 97.5 },
+                            Round2: { Open: 99.4000, SC: 91.5, ST: 86.5, OBC: 95.5, Ladies: 96.5, TFWS: 96.0, EWS: 97.0 },
+                            Round3: { Open: 99.3000, SC: 91.0, ST: 86.0, OBC: 95.0, Ladies: 96.0, TFWS: 95.5, EWS: 96.5 }
+                        }
+                    },
+                    ECS: {
+                        CET: {
+                            Round1: { Open: 99.5716, SC: 97.1295, ST: 90.4629, OBC: 99.3071, Ladies: 99.4057, TFWS: 99.3601, EWS: 98.9707 },
+                            Round2: { Open: 99.5305, SC: 97.0114, ST: 90.4629, OBC: 99.3071, Ladies: 99.4082, TFWS: 99.360, EWS: 98.9707 },
+                            Round3: { Open: 99.5479, SC: 97.01142, ST: 90.4629, OBC: 99.30711, Ladies: 99.3413, TFWS: 99.360, EWS: 98.9707209 }
+                        },
+                        JEE: {
+                            Round1: { Open: 99.2000, SC: 90.0, ST: 85.0, OBC: 94.5, Ladies: 95.5, TFWS: 95.0, EWS: 96.0 },
+                            Round2: { Open: 99.1000, SC: 89.5, ST: 84.5, OBC: 94.0, Ladies: 95.0, TFWS: 94.5, EWS: 95.5 },
+                            Round3: { Open: 99.0000, SC: 89.0, ST: 84.0, OBC: 93.5, Ladies: 94.5, TFWS: 94.0, EWS: 95.0 }
+                        }
+                    },
+                    MECH: {
+                        CET: {
+                            Round1: { Open: 99.2312, SC: 96.3258, ST: 88.7353, OBC: 98.8078, Ladies: 98.6919, TFWS: 97.8143, EWS: 99.0119 },
+                            Round2: { Open: 99.1347, SC: 95.1868, ST: 79.0746, OBC: 98.8078, Ladies: 98.6244, TFWS: 99.012, EWS: 97.6396 },
+                            Round3: { Open: 99.1347, SC: 95.18678, ST: 84.7973, OBC: 98.66027, Ladies: 98.6244, TFWS: 99.012, EWS: 97.6886302 }
+                        },
+                        JEE: {
+                            Round1: { Open: 98.8000, SC: 87.0, ST: 82.0, OBC: 92.0, Ladies: 93.0, TFWS: 92.5, EWS: 94.0 },
+                            Round2: { Open: 98.6000, SC: 86.5, ST: 81.5, OBC: 91.5, Ladies: 92.5, TFWS: 92.0, EWS: 93.5 },
+                            Round3: { Open: 98.4000, SC: 86.0, ST: 81.0, OBC: 91.0, Ladies: 92.0, TFWS: 91.5, EWS: 93.0 }
+                        }
+                    },
+                    ELECTRICAL: {
+                        CET: {
+                            Round1: { Open: 99.3618, SC: 96.7467, ST: 86.8244, OBC: 99.1279, Ladies: 98.5704, TFWS: 99.2537, EWS: 98.6188 },
+                            Round2: { Open: 99.3332, SC: 96.2601, ST: 85.0744, OBC: 99.1361, Ladies: 99.1772, TFWS: 99.254, EWS: 98.6188 },
+                            Round3: { Open: 99.3114, SC: 96.26014, ST: 85.0744, OBC: 99.17965, Ladies: 99.1772, TFWS: 99.254, EWS: 98.6187719 }
+                        },
+                        JEE: {
+                            Round1: { Open: 98.9000, SC: 88.0, ST: 83.0, OBC: 93.0, Ladies: 94.0, TFWS: 93.5, EWS: 94.5 },
+                            Round2: { Open: 98.7000, SC: 87.5, ST: 82.5, OBC: 92.5, Ladies: 93.5, TFWS: 93.0, EWS: 94.0 },
+                            Round3: { Open: 98.5000, SC: 87.0, ST: 82.0, OBC: 92.0, Ladies: 93.0, TFWS: 92.5, EWS: 93.5 }
+                        }
+                    },
+                    CIVIL: {
+                        CET: {
+                            Round1: { Open: 98.3309, SC: 93.4558, ST: 83.5369, OBC: 97.7676, Ladies: 96.8268, TFWS: 97.9793, EWS: 96.8689 },
+                            Round2: { Open: 98.1804, SC: 93.8339, ST: 83.5369, OBC: 97.4360, Ladies: 96.8268, TFWS: 97.979, EWS: 96.5359 },
+                            Round3: { Open: 98.1804, SC: 93.83395, ST: 83.5369, OBC: 97.54341, Ladies: 96.8268, TFWS: 97.756, EWS: 96.5358932 }
+                        },
+                        JEE: {
+                            Round1: { Open: 97.5000, SC: 83.0, ST: 78.0, OBC: 88.0, Ladies: 89.0, TFWS: 88.5, EWS: 90.0 },
+                            Round2: { Open: 97.2000, SC: 82.5, ST: 77.5, OBC: 87.5, Ladies: 88.5, TFWS: 88.0, EWS: 89.5 },
+                            Round3: { Open: 97.0000, SC: 82.0, ST: 77.0, OBC: 87.0, Ladies: 88.0, TFWS: 87.5, EWS: 89.0 }
+                        }
+                    },
+                    PRODUCTION: {
+                        CET: {
+                            Round1: { Open: 98.3335, SC: 92.2260, ST: 70.6179, OBC: 97.4427, Ladies: 96.7963, TFWS: 96.7616, EWS: 94.5541 },
+                            Round2: { Open: 98.2118, SC: 90.8331, ST: 70.6179, OBC: 97.0498, Ladies: 93.8261, TFWS: 96.762, EWS: 94.2061 },
+                            Round3: { Open: 98.2118, SC: 90.83312, ST: 70.6179, OBC: 96.8156, Ladies: 96.7963, TFWS: 96.762, EWS: 94.2061358 }
+                        },
+                        JEE: {
+                            Round1: { Open: 97.0000, SC: 80.0, ST: 75.0, OBC: 85.0, Ladies: 86.0, TFWS: 85.5, EWS: 87.0 },
+                            Round2: { Open: 96.8000, SC: 79.5, ST: 74.5, OBC: 84.5, Ladies: 85.5, TFWS: 85.0, EWS: 86.5 },
+                            Round3: { Open: 96.5000, SC: 79.0, ST: 74.0, OBC: 84.0, Ladies: 85.0, TFWS: 84.5, EWS: 86.0 }
+                        }
+                    },
+                    TEXTILE: {
+                        CET: {
+                            Round1: { Open: 96.5964, SC: 89.7788, ST: 52.9935, OBC: 95.6491, Ladies: 96.3916, TFWS: 92.3371, EWS: 96.6701 },
+                            Round2: { Open: 96.1463, SC: 90.0772, ST: 52.9935, OBC: 94.8965, Ladies: 96.0996, TFWS: 95.178, EWS: 91.5401 },
+                            Round3: { Open: 96.1463, SC: 89.7788, ST: 52.9935, OBC: 94.8965, Ladies: 96.0562, TFWS: 95.178, EWS: 90.6140311 }
+                        },
+                        JEE: {
+                            Round1: { Open: 94.0000, SC: 75.0, ST: 70.0, OBC: 80.0, Ladies: 81.0, TFWS: 80.5, EWS: 82.0 },
+                            Round2: { Open: 93.5000, SC: 74.5, ST: 69.5, OBC: 79.5, Ladies: 80.5, TFWS: 80.0, EWS: 81.5 },
+                            Round3: { Open: 93.0000, SC: 74.0, ST: 69.0, OBC: 79.0, Ladies: 80.0, TFWS: 79.5, EWS: 81.0 }
+                        }
+                    }
+                }
+            },
+            {
+                name: "Sardar Patel Institute of Technology, Andheri",
+                linguisticMinority: "NON_MINORITY",
+                branches: {
+                    COMPUTERS: {
+                        CET: {
+                            Round1: { Open: 99.8171, SC: 98.0170, ST: 90.4629, OBC: 99.4963, Ladies: 99.6480, TFWS: 99.6619, EWS: 99.1293 },
+                            Round2: { Open: 99.7800, SC: 97.6387, ST: 90.4629, OBC: 99.3766, Ladies: 99.6461, TFWS: 99.654, EWS: 99.0598 },
+                            Round3: { Open: 99.7800, SC: 97.6386926, ST: 90.4629, OBC: 99.37664, Ladies: 99.6461, TFWS: 99.654, EWS: 99.059807 }
+                        },
+                        JEE: {
+                            Round1: { Open: 98.3501, SC: 92.0, ST: 87.0, OBC: 95.0, Ladies: 96.0, TFWS: 95.5, EWS: 96.5 },
+                            Round2: { Open: 98.2000, SC: 91.5, ST: 86.5, OBC: 94.5, Ladies: 95.5, TFWS: 95.0, EWS: 96.0 },
+                            Round3: { Open: 98.0000, SC: 91.0, ST: 86.0, OBC: 94.0, Ladies: 95.0, TFWS: 94.5, EWS: 95.5 }
+                        }
+                    },
+                    CSE: {
+                        CET: {
+                            Round1: { Open: 99.755, SC: 97.7963, ST: 92.7704, OBC: 99.4513, Ladies: 99.6051, TFWS: 99.651, EWS: 99.1563 },
+                            Round2: { Open: 99.7200, SC: 97.5087, ST: 92.7704, OBC: 99.3723, Ladies: 99.5366, TFWS: 99.6480, EWS: 99.1346 },
+                            Round3: { Open: 99.7008, SC: 97.5087373, ST: 92.77044, OBC: 99.3618, Ladies: 99.5366, TFWS: 99.64796, EWS: 99.1346 }
+                        },
+                        JEE: {
+                            Round1: { Open: 98.2000, SC: 91.5, ST: 86.0, OBC: 94.5, Ladies: 95.5, TFWS: 95.0, EWS: 96.0 },
+                            Round2: { Open: 98.0000, SC: 91.0, ST: 85.5, OBC: 94.0, Ladies: 95.0, TFWS: 94.5, EWS: 95.5 },
+                            Round3: { Open: 97.8000, SC: 90.5, ST: 85.0, OBC: 93.5, Ladies: 94.5, TFWS: 94.0, EWS: 95.0 }
+                        }
+                    },
+                    IT: {
+                        CET: {
+                            Round1: { Open: 99.6000, SC: 96.5, ST: 90.0, OBC: 98.8, Ladies: 99.0, TFWS: 99.2, EWS: 98.5 },
+                            Round2: { Open: 99.5500, SC: 96.0, ST: 89.5, OBC: 98.5, Ladies: 98.8, TFWS: 99.0, EWS: 98.2 },
+                            Round3: { Open: 99.5000, SC: 95.5, ST: 89.0, OBC: 98.2, Ladies: 98.5, TFWS: 98.8, EWS: 98.0 }
+                        },
+                        JEE: {
+                            Round1: { Open: 97.5000, SC: 89.0, ST: 84.0, OBC: 92.0, Ladies: 93.0, TFWS: 92.5, EWS: 94.0 },
+                            Round2: { Open: 97.2000, SC: 88.5, ST: 83.5, OBC: 91.5, Ladies: 92.5, TFWS: 92.0, EWS: 93.5 },
+                            Round3: { Open: 97.0000, SC: 88.0, ST: 83.0, OBC: 91.0, Ladies: 92.0, TFWS: 91.5, EWS: 93.0 }
+                        }
+                    },
+                    AIDS: {
+                        CET: {
+                            Round1: { Open: 99.3101, SC: 96.0, ST: 88.5, OBC: 98.0, Ladies: 98.5, TFWS: 98.8, EWS: 97.8 },
+                            Round2: { Open: 99.2500, SC: 95.5, ST: 88.0, OBC: 97.8, Ladies: 98.2, TFWS: 98.5, EWS: 97.5 },
+                            Round3: { Open: 99.2000, SC: 95.0, ST: 87.5, OBC: 97.5, Ladies: 98.0, TFWS: 98.2, EWS: 97.2 }
+                        },
+                        JEE: {
+                            Round1: { Open: 97.602, SC: 87.0, ST: 82.0, OBC: 90.5, Ladies: 91.5, TFWS: 91.0, EWS: 92.0 },
+                            Round2: { Open: 97.4000, SC: 86.5, ST: 81.5, OBC: 90.0, Ladies: 91.0, TFWS: 90.5, EWS: 91.5 },
+                            Round3: { Open: 97.2000, SC: 86.0, ST: 81.0, OBC: 89.5, Ladies: 90.5, TFWS: 90.0, EWS: 91.0 }
+                        }
+                    },
+                    EXTC: {
+                        CET: {
+                            Round1: { Open: 99.3808, SC: 97.0114, ST: 83.1470, OBC: 98.8802, Ladies: 99.2686, TFWS: 99.0749, EWS: 98.4474 },
+                            Round2: { Open: 99.3166, SC: 96.1116, ST: 83.1470, OBC: 98.8664, Ladies: 99.1756, TFWS: 99.031, EWS: 97.9889 },
+                            Round3: { Open: 99.3102, SC: 96.1115923, ST: 83.1470, OBC: 98.82099, Ladies: 99.1756, TFWS: 98.988, EWS: 97.988925 }
+                        },
+                        JEE: {
+                            Round1: { Open: 96.8000, SC: 84.0, ST: 79.0, OBC: 88.5, Ladies: 89.5, TFWS: 89.0, EWS: 90.0 },
+                            Round2: { Open: 96.5000, SC: 83.5, ST: 78.5, OBC: 88.0, Ladies: 89.0, TFWS: 88.5, EWS: 89.5 },
+                            Round3: { Open: 96.2000, SC: 83.0, ST: 78.0, OBC: 87.5, Ladies: 88.5, TFWS: 88.0, EWS: 89.0 }
+                        }
+                    },
+                    AIML: {
+                        CET: {
+                            Round1: { Open: 99.4000, SC: 96.2, ST: 89.0, OBC: 98.2, Ladies: 98.8, TFWS: 99.0, EWS: 98.0 },
+                            Round2: { Open: 99.3500, SC: 95.8, ST: 88.5, OBC: 98.0, Ladies: 98.5, TFWS: 98.8, EWS: 97.8 },
+                            Round3: { Open: 99.3000, SC: 95.5, ST: 88.0, OBC: 97.8, Ladies: 98.2, TFWS: 98.5, EWS: 97.5 }
+                        },
+                        JEE: {
+                            Round1: { Open: 97.8000, SC: 88.5, ST: 83.5, OBC: 91.5, Ladies: 92.5, TFWS: 92.0, EWS: 93.0 },
+                            Round2: { Open: 97.6000, SC: 88.0, ST: 83.0, OBC: 91.0, Ladies: 92.0, TFWS: 91.5, EWS: 92.5 },
+                            Round3: { Open: 97.4000, SC: 87.5, ST: 82.5, OBC: 90.5, Ladies: 91.5, TFWS: 91.0, EWS: 92.0 }
+                        }
+                    },
+                    ECS: {
+                        CET: {
+                            Round1: { Open: 99.2000, SC: 95.5, ST: 87.0, OBC: 97.5, Ladies: 98.0, TFWS: 98.2, EWS: 97.0 },
+                            Round2: { Open: 99.1500, SC: 95.0, ST: 86.5, OBC: 97.2, Ladies: 97.8, TFWS: 98.0, EWS: 96.8 },
+                            Round3: { Open: 99.1000, SC: 94.5, ST: 86.0, OBC: 97.0, Ladies: 97.5, TFWS: 97.8, EWS: 96.5 }
+                        },
+                        JEE: {
+                            Round1: { Open: 96.5000, SC: 83.0, ST: 78.0, OBC: 87.5, Ladies: 88.5, TFWS: 88.0, EWS: 89.0 },
+                            Round2: { Open: 96.2000, SC: 82.5, ST: 77.5, OBC: 87.0, Ladies: 88.0, TFWS: 87.5, EWS: 88.5 },
+                            Round3: { Open: 96.0000, SC: 82.0, ST: 77.0, OBC: 86.5, Ladies: 87.5, TFWS: 87.0, EWS: 88.0 }
+                        }
+                    },
+                    MECH: {
+                        CET: {
+                            Round1: { Open: 98.8000, SC: 93.0, ST: 83.0, OBC: 96.5, Ladies: 97.0, TFWS: 97.2, EWS: 96.0 },
+                            Round2: { Open: 98.7000, SC: 92.5, ST: 82.5, OBC: 96.2, Ladies: 96.8, TFWS: 97.0, EWS: 95.8 },
+                            Round3: { Open: 98.6000, SC: 92.0, ST: 82.0, OBC: 96.0, Ladies: 96.5, TFWS: 96.8, EWS: 95.5 }
+                        },
+                        JEE: {
+                            Round1: { Open: 95.5000, SC: 80.0, ST: 75.0, OBC: 85.0, Ladies: 86.0, TFWS: 85.5, EWS: 87.0 },
+                            Round2: { Open: 95.2000, SC: 79.5, ST: 74.5, OBC: 84.5, Ladies: 85.5, TFWS: 85.0, EWS: 86.5 },
+                            Round3: { Open: 95.0000, SC: 79.0, ST: 74.0, OBC: 84.0, Ladies: 85.0, TFWS: 84.5, EWS: 86.0 }
+                        }
+                    }
+                }
+            },
+            {
+                name: "DJ Sanghvi College of Engineering, Vile Parle",
+                linguisticMinority: "GUJARATI",
+                branches: {
+                    COMPUTERS: {
+                        seats: 180,
+                        CET: {
+                            Round1: { Open: 99.520, Ladies: 99.4559, TFWS: 99.526, MI: 98.9424 },
+                            Round2: { Open: 99.4792, Ladies: 99.3601, TFWS: 99.5261, MI: 98.9150 },
+                            Round3: { Open: 99.4417, Ladies: 99.3601, TFWS: 99.52609, MI: 98.9150 }
+                        }
+                    },
+                    IT: {
+                        seats: 180,
+                        CET: {
+                            Round1: { Open: 99.2114, Ladies: 99.1068, TFWS: 99.3279, MI: 98.0682 },
+                            Round2: { Open: 99.0427, Ladies: 98.9947, TFWS: 99.3166, MI: 98.0682 },
+                            Round3: { Open: 99.04271, Ladies: 98.9947, TFWS: 99.3166, MI: 98.0682 }
+                        }
+                    },
+                    AIDS: {
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 99.0373, Ladies: 98.6345, TFWS: 99.2686, MI: 96.8832 },
+                            Round2: { Open: 98.8359, Ladies: 98.6345, TFWS: 99.269, MI: 96.8832 },
+                            Round3: { Open: 98.8316, Ladies: 98.6345, TFWS: 99.269, MI: 96.9 }
+                        }
+                    },
+                    EXTC: {
+                        seats: 180,
+                        CET: {
+                            Round1: { Open: 98.3270, Ladies: 97.7477, TFWS: 97.9720, MI: 94.0958 },
+                            Round2: { Open: 95.9583, Ladies: 97.7477, TFWS: 97.814, MI: 93.9722 },
+                            Round3: { Open: 98.1178, Ladies: 97.7477, TFWS: 97.700, MI: 94.1 }
+                        }
+                    },
+                    MECH: {
+                        seats: 180,
+                        CET: {
+                            Round1: { Open: 96.8832, Ladies: 94.7537, TFWS: 94.8243, MI: 86.1433 },
+                            Round2: { Open: 96.7546, Ladies: 94.3921, TFWS: 94.824, MI: 85.5052 },
+                            Round3: { Open: 96.7546, Ladies: 94.3921, TFWS: 93.411, MI: 85.5 }
+                        }
+                    },
+                    CSE_DS: {
+                        name: "CSE (Data Science)",
+                        seats: 180,
+                        CET: {
+                            Round1: { Open: 98.8742, Ladies: 98.7270, TFWS: 98.9309, MI: 97.0498 },
+                            Round2: { Open: 98.8513, Ladies: 98.7238, TFWS: 98.931, MI: 97.0498 },
+                            Round3: { Open: 98.7826, Ladies: 98.7238, TFWS: 98.931, MI: 97.0 }
+                        }
+                    },
+                    CSE_IOT: {
+                        name: "CSE (IoT & Cyber Security)",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 98.8738, Ladies: 98.5351, TFWS: 98.7907, MI: 96.0264 },
+                            Round2: { Open: 98.7008, Ladies: 98.2339, TFWS: 98.564, MI: 95.9024 },
+                            Round3: { Open: 98.6583, Ladies: 98.2339, TFWS: 98.564, MI: 95.9 }
+                        }
+                    },
+                    AIML: {
+                        seats: 120,
+                        CET: {
+                            Round1: { Open: 98.8513, Ladies: 98.6244, TFWS: 99.0598, MI: 96.2985 },
+                            Round2: { Open: 98.7240, Ladies: 98.2759, TFWS: 98.795, MI: 96.2601 },
+                            Round3: { Open: 98.7008, Ladies: 98.2759, TFWS: 98.795, MI: 96.3 }
+                        }
+                    }
+                }
+            },
+            {
+                name: "Thadomal Shahani Engineering College, Bandra",
+                linguisticMinority: "SINDHI",
+                branches: {
+                    COMPUTERS: {
+                        seats: 180,
+                        CET: {
+                            Round1: { Open: 98.795, Ladies: 98.5524, TFWS: 99.035, MI: 93.8710 },
+                            Round2: { Open: 98.7367, Ladies: 98.4721, TFWS: 99.0346, MI: 93.6708 },
+                            Round3: { Open: 98.6855, Ladies: 98.4721, TFWS: 99.0232, MI: 93.6708 }
+                        }
+                    },
+                    IT: {
+                        seats: 120,
+                        CET: {
+                            Round1: { Open: 98.6603, Ladies: 98.1943, TFWS: 98.5949, MI: 86.1433 },
+                            Round2: { Open: 98.5949, Ladies: 98.1913, TFWS: 98.5949, MI: 86.1433 },
+                            Round3: { Open: 98.57042, Ladies: 98.1913, TFWS: 98.5040, MI: 86.1433 }
+                        }
+                    },
+                    EXTC: {
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 97.9278, Ladies: 97.5744, TFWS: 97.5357, MI: 6.1921 },
+                            Round2: { Open: 97.9278, Ladies: 97.4803, TFWS: 97.240, MI: 6.1921 },
+                            Round3: { Open: 97.8541, Ladies: 97.4803, TFWS: 97.073, MI: 6.1920774 }
+                        }
+                    },
+                    CHEMICAL: {
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 97.0114, Ladies: 95.2233, TFWS: 95.3474, MI: 24.0472 },
+                            Round2: { Open: 96.5111, Ladies: 95.1868, TFWS: 95.347, MI: 48.7779 },
+                            Round3: { Open: 96.2437, Ladies: 94.5199, TFWS: 95.347, MI: 29.307179 }
+                        }
+                    },
+                    AIDS: {
+                        seats: 120,
+                        CET: {
+                            Round1: { Open: 97.6387, Ladies: 97.0734, TFWS: 98.4718, MI: 81.9801 },
+                            Round2: { Open: 98.4581, Ladies: 97.9720, TFWS: 98.417, MI: 81.9801 },
+                            Round3: { Open: 98.4469, Ladies: 97.9720, TFWS: 98.339, MI: 81.980148 }
+                        }
+                    }
+                }
+            },
+            {
+                name: "Vivekanand Education Society's Institute of Technology, Chembur",
+                linguisticMinority: "SINDHI",
+                branches: {
+                    COMPUTERS: {
+                        seats: 180,
+                        CET: {
+                            Round1: { Open: 98.367, Ladies: 98.0867, TFWS: 98.685, MI: 80.5929 },
+                            Round2: { Open: 98.2504, Ladies: 97.9630, TFWS: 98.6780, MI: 80.5929 },
+                            Round3: { Open: 98.2118, Ladies: 97.9630, TFWS: 98.67803, MI: 80.5929 }
+                        }
+                    },
+                    IT: {
+                        seats: 180,
+                        CET: {
+                            Round1: { Open: 97.7105, Ladies: 97.3976, TFWS: 98.2118, MI: 65.4406 },
+                            Round2: { Open: 97.6387, Ladies: 97.2863, TFWS: 98.1674, MI: 65.4406 },
+                            Round3: { Open: 97.63869, Ladies: 97.2863, TFWS: 98.1674, MI: 65.4406 }
+                        }
+                    },
+                    EXTC: {
+                        seats: 120,
+                        CET: {
+                            Round1: { Open: 96.0562, Ladies: 96.0996, TFWS: 96.1569, MI: 11.0206 },
+                            Round2: { Open: 96.0562, Ladies: 95.6466, TFWS: 96.056, MI: 7.7922 },
+                            Round3: { Open: 96.0562, Ladies: 95.7446, TFWS: 96.056, MI: 7.7921536 }
+                        }
+                    },
+                    ECS: {
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 97.0110, Ladies: 96.5359, TFWS: 96.9531, MI: 9.9568 },
+                            Round2: { Open: 96.9032, Ladies: 96.5111, TFWS: 96.896, MI: 9.9568 },
+                            Round3: { Open: 96.8881, Ladies: 96.5111, TFWS: 96.896, MI: 11.047683 }
+                        }
+                    },
+                    AUTOMATION_ROBOTICS: {
+                        name: "Automation and Robotics",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 95.2363, Ladies: 94.5227, TFWS: 95.3474, MI: 28.3301 },
+                            Round2: { Open: 95.0452, Ladies: 94.5227, TFWS: 94.520, MI: 25.7846 },
+                            Round3: { Open: 95.1653, Ladies: 94.5227, TFWS: 94.520, MI: 12.613514 }
+                        }
+                    },
+                    AIDS: {
+                        seats: 120,
+                        CET: {
+                            Round1: { Open: 97.4374, Ladies: 96.8881, TFWS: 97.9720, MI: 57.3311 },
+                            Round2: { Open: 97.2402, Ladies: 96.7696, TFWS: 97.889, MI: 57.3311 },
+                            Round3: { Open: 97.2402, Ladies: 96.7696, TFWS: 97.889, MI: 57.33107 }
+                        }
+                    }
+                }
+            },
+            {
+                name: "K J Somaiya College of Engineering, Sion",
+                linguisticMinority: "GUJARATI",
+                branches: {
+                    COMPUTERS: {
+                        seats: 120,
+                        CET: {
+                            Round1: { Open: 97.881, Ladies: 97.2979, TFWS: 98.037, MI: 93.7521 },
+                            Round2: { Open: 97.4972, Ladies: 96.9748, TFWS: 97.9889, MI: 93.5275 },
+                            Round3: { Open: 97.4972, Ladies: 96.9748, TFWS: 97.98892, MI: 93.5275 }
+                        }
+                    },
+                    IT: {
+                        seats: 120,
+                        CET: {
+                            Round1: { Open: 97.1867, Ladies: 96.7460, TFWS: 97.5357, MI: 91.6275 },
+                            Round2: { Open: 96.8813, Ladies: 96.5185, TFWS: 97.5357, MI: 91.2742 },
+                            Round3: { Open: 96.84077, Ladies: 96.5185, TFWS: 97.5357, MI: 91.2742 }
+                        }
+                    },
+                    EXTC: {
+                        seats: 120,
+                        CET: {
+                            Round1: { Open: 95.7154, Ladies: 95.1776, TFWS: 96.0129, MI: 80.5897 },
+                            Round2: { Open: 94.8243, Ladies: 94.4796, TFWS: 95.487, MI: 78.9561 },
+                            Round3: { Open: 94.6904, Ladies: 94.4357, TFWS: 95.463, MI: 78.956117 }
+                        }
+                    },
+                    AIDS: {
+                        seats: 120,
+                        CET: {
+                            Round1: { Open: 96.9076, Ladies: 96.3258, TFWS: 97.1357, MI: 89.7974 },
+                            Round2: { Open: 96.4242, Ladies: 96.1463, TFWS: 97.136, MI: 89.0644 },
+                            Round3: { Open: 96.4125, Ladies: 96.0562, TFWS: 97.136, MI: 89.064429 }
+                        }
+                    }
+                }
+            },
+            {
+                name: "Fr. Conceicao Rodrigues College of Engineering (Fr. Agnel), Bandra",
+                 linguisticMinority: "CHRISTIAN",
+                branches: {
+                    COMPUTERS: {
+                        seats: 120,
+                        CET: {
+                            Round1: { Open: 97.840, Ladies: 97.1357, TFWS: 98.109, MI: 86.8553 },
+                            Round2: { Open: 97.7477, Ladies: 97.1357, TFWS: 98.0469, MI: 86.8553 },
+                            Round3: { Open: 97.6850, Ladies: 97.1357, TFWS: 98.0469, MI: 86.8553 }
+                        }
+                    },
+                    MECH: {
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 94.3921, Ladies: 92.2802, TFWS: 93.0349, MI: 27.4155 },
+                            Round2: { Open: 92.9300, Ladies: 92.2802, TFWS: 93.0349, MI: 36.9291 },
+                            Round3: { Open: 92.59342, Ladies: 91.9493, TFWS: 93.0349, MI: 36.9291 }
+                        }
+                    },
+                    ECS: {
+                        name: "Electronics & Computer Science",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 96.6701, Ladies: 96.1569, TFWS: 96.2757, MI: 45.4575 },
+                            Round2: { Open: 96.2601, Ladies: 95.9566, TFWS: 95.050, MI: 45.4575 },
+                            Round3: { Open: 96.2601, Ladies: 95.9566, TFWS: 95.728, MI: 45.45748 }
+                        }
+                    },
+                    CSE: {
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 97.9132, Ladies: 97.9132, TFWS: 98.0012, MI: 87.3944 },
+                            Round2: { Open: 97.9132, Ladies: 97.3579, TFWS: 98.001, MI: 87.3944 },
+                            Round3: { Open: 97.7105, Ladies: 97.3579, TFWS: 98.001, MI: 87.39435 }
+                        }
+                    }
+                }
+            },
+            {
+                name: "Vidyalankar,Wadala",
+                 linguisticMinority: "NON_MINORITY",
+                branches: {
+                    COMPUTERS: { CET: { Open: 97.1791, JEE_M: 92.9802 }, JEE: { Open: 96.2109, JEE_M: 87.4759 } },
+                    IT: { CET: { Open: 93.3794, JEE_M: 87.4759 }, JEE: { Open: 94.5631, JEE_M: 89.1 } },
+                    AIDS: { CET: { Open: null, JEE_M: null }, JEE: { Open: 16856, JEE_M: 8399 } },
+                    AIML: { CET: { Open: null, JEE_M: null }, JEE: { Open: null, JEE_M: null } },
+                    EXTC: { CET: { Open: 90.277, JEE_M: 88.0271 }, JEE: { Open: null, JEE_M: null } },
+                    ECS: { CET: { Open: null, JEE_M: null }, JEE: { Open: null, JEE_M: null } },
+                    MECH: { CET: { Open: null, JEE_M: null }, JEE: { Open: null, JEE_M: null } }
+                }
+            },
+            {
+                name: "Thakur College of Engineering and Technology, Kandivali",
+                linguisticMinority: "HINDI",
+                branches: {
+                    COMPUTERS: {
+                        seats: 240,
+                        CET: {
+                            Round1: { Open: 97.050, Ladies: 96.2307, TFWS: 97.699, MI: 94.8398 },
+                            Round2: { Open: 97.0033, Ladies: 96.2109, TFWS: 97.6995, MI: 94.5997 },
+                            Round3: { Open: 96.9076, Ladies: 96.0392, TFWS: 97.6995, MI: 94.5997 }
+                        }
+                    },
+                    IT: {
+                        seats: 180,
+                        CET: {
+                            Round1: { Open: 96.2211, Ladies: 95.5828, TFWS: 97.2842, MI: 92.8099 },
+                            Round2: { Open: 96.0032, Ladies: 95.2922, TFWS: 97.2842, MI: 92.4301 },
+                            Round3: { Open: 96.0032, Ladies: 95.2922, TFWS: 97.2842, MI: 92.4301 }
+                        }
+                    },
+                    IOT: {
+                        name: "Internet of Things",
+                        seats: 30,
+                        CET: {
+                            Round1: { Open: 94.6904, Ladies: 94.2444, TFWS: 95.0779, MI: 88.4426 },
+                            Round2: { Open: 94.2444, Ladies: 93.9015, TFWS: 94.173, MI: 88.1140 },
+                            Round3: { Open: 94.0243, Ladies: 93.9015, TFWS: 93.746, MI: 88.114024 }
+                        }
+                    },
+                    CIVIL: {
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 92.0088, Ladies: 86.5602, TFWS: 91.6681, MI: 13.6478 },
+                            Round2: { Open: 88.3568, Ladies: 82.4752, TFWS: 89.491, MI: 13.6478 },
+                            Round3: { Open: 89.5918, Ladies: 82.4752, TFWS: 89.491, MI: 13.647753 }
+                        }
+                    },
+                    EXTC: {
+                        seats: 120,
+                        CET: {
+                            Round1: { Open: 93.8694, Ladies: 92.7611, TFWS: 93.4044, MI: 83.1984 },
+                            Round2: { Open: 93.3592, Ladies: 92.0214, TFWS: 93.404, MI: 83.1984 },
+                            Round3: { Open: 93.1282, Ladies: 92.0214, TFWS: 92.596, MI: 83.198398 }
+                        }
+                    },
+                    MECH_MECHATRONICS: {
+                        name: "Mechanical & Mechatronics",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 88.1926, Ladies: 81.2929, TFWS: 89.0036, MI: 6.2116 },
+                            Round2: { Open: 86.9702, Ladies: 78.8105, TFWS: 89.004, MI: 6.2116 },
+                            Round3: { Open: 88.0525, Ladies: 81.0485, TFWS: 89.004, MI: 6.2116069 }
+                        }
+                    },
+                    ECS: {
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 94.4664, Ladies: 93.9959, TFWS: 95.0334, MI: 87.2953 },
+                            Round2: { Open: 94.4189, Ladies: 93.4924, TFWS: 94.600, MI: 87.2953 },
+                            Round3: { Open: 94.4189, Ladies: 93.4924, TFWS: 94.600, MI: 87.295318 }
+                        }
+                    },
+                    CSE_CYBER: {
+                        name: "CSE (Cyber Security)",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 95.4837, Ladies: 95.5073, TFWS: 96.1033, MI: 89.3223 },
+                            Round2: { Open: 95.4729, Ladies: 94.2401, TFWS: 96.103, MI: 89.2150 },
+                            Round3: { Open: 95.0382, Ladies: 94.2401, TFWS: 96.103, MI: 89.214983 }
+                        }
+                    },
+                    AIML: {
+                        seats: 180,
+                        CET: {
+                            Round1: { Open: 95.6864, Ladies: 94.6896, TFWS: 96.0129, MI: 89.3322 },
+                            Round2: { Open: 95.0452, Ladies: 94.2401, TFWS: 96.013, MI: 89.3322 },
+                            Round3: { Open: 95.0339, Ladies: 94.9520, TFWS: 96.013, MI: 89.33217 }
+                        }
+                    },
+                    AIDS: {
+                        seats: 180,
+                        CET: {
+                            Round1: { Open: 95.7930, Ladies: 95.2363, TFWS: 96.3916, MI: 91.1269 },
+                            Round2: { Open: 95.2642, Ladies: 95.0452, TFWS: 96.392, MI: 90.8331 },
+                            Round3: { Open: 95.2642, Ladies: 95.0452, TFWS: 96.392, MI: 90.833116 }
+                        }
+                    },
+                    MECH: {
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 92.8872, Ladies: 88.1228, TFWS: 92.8099, MI: 68.4737 },
+                            Round2: { Open: 91.7222, Ladies: 88.1228, TFWS: 92.635, MI: 64.4664 },
+                            Round3: { Open: 90.2977, Ladies: 86.2658, TFWS: 92.635, MI: 64.466427 }
+                        }
+                    }
+                }
+            },
+            {
+                name: "Don Bosco Institute of Technology, Kurla",
+                linguisticMinority: "ROMAN_CATHOLIC_CHRISTIAN",
+                branches: {
+                    COMPUTERS: {
+                        seats: 120,
+                        CET: {
+                            Round1: {
+                                Open: 96.103,
+                                Ladies: 95.9024,
+                                TFWS: 97.310,
+                                MI: 43.9566,
+                                ranks: { Open: 11832, Ladies: 12355, TFWS: 8076, MI: 131318 }
+                            },
+                            Round2: {
+                                Open: 95.8527,
+                                Ladies: 95.7446,
+                                TFWS: 97.2157,
+                                MI: 39.2351,
+                                ranks: { Open: 12561, Ladies: 12854, TFWS: 8358, MI: 138210 }
+                            },
+                            Round3: {
+                                Open: 95.8527,
+                                Ladies: 95.7154,
+                                TFWS: 97.21567,
+                                MI: 39.2351,
+                                ranks: { Open: 12549, Ladies: 12924, TFWS: 8358, MI: 138210 }
+                            }
+                        }
+                    },
+                    IT: {
+                        name: "Information Technology",
+                        seats: 60,
+                        CET: {
+                            Round1: {
+                                Open: 95.5254,
+                                Ladies: 95.5785,
+                                TFWS: 96.5648,
+                                MI: 0.3700,
+                                ranks: { Open: 13493, Ladies: 13372, TFWS: 10416, MI: 179380 }
+                            },
+                            Round2: {
+                                Open: 95.3932,
+                                Ladies: 95.2642,
+                                TFWS: 96.5648,
+                                MI: 3.1263,
+                                ranks: { Open: 13847, Ladies: 14345, TFWS: 10416, MI: 177485 }
+                            },
+                            Round3: {
+                                Open: 95.17756,
+                                Ladies: 95.0168,
+                                TFWS: 96.5648,
+                                MI: 3.1263,
+                                ranks: { Open: 14634, Ladies: 15095, TFWS: 10416, MI: 177485 }
+                            }
+                        }
+                    },
+                    EXTC: {
+                        name: "Electronics & Telecommunication",
+                        seats: 60,
+                        CET: {
+                            Round1: {
+                                Open: 89.9196,
+                                Ladies: 88.5014,
+                                TFWS: 92.9341,
+                                MI: 3.8709,
+                                ranks: { Open: 29961, Ladies: 34158, TFWS: 21125, MI: 177044 }
+                            },
+                            Round2: {
+                                Open: 89.9248,
+                                Ladies: 88.5014,
+                                TFWS: 92.934,
+                                MI: 9.5534,
+                                ranks: { Open: 29844, Ladies: 34158, TFWS: 21125, MI: 172506 }
+                            },
+                            Round3: {
+                                Open: 87.0845,
+                                Ladies: 85.2126,
+                                TFWS: 92.934,
+                                MI: 9.5534224,
+                                ranks: { Open: 37976, Ladies: 43387, TFWS: 21125, MI: 172506 }
+                            }
+                        }
+                    },
+                    MECHANICAL: {
+                        seats: 60,
+                        CET: {
+                            Round1: {
+                                Open: 85.9711,
+                                Ladies: 69.2755,
+                                TFWS: 80.6345,
+                                MI: 25.5140,
+                                ranks: { Open: 41090, Ladies: 83911, TFWS: 55643, MI: 156256 }
+                            },
+                            Round2: {
+                                Open: 77.8411,
+                                Ladies: 69.2755,
+                                TFWS: 80.634,
+                                MI: 25.5140,
+                                ranks: { Open: 63041, Ladies: 83911, TFWS: 55643, MI: 156256 }
+                            },
+                            Round3: {
+                                Open: 76.7998,
+                                Ladies: 47.0114,
+                                TFWS: 80.634,
+                                MI: 25.513972,
+                                ranks: { Open: 65296, Ladies: 126751, TFWS: 55643, MI: 156256 }
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                name: "St. Francis Institute of Technology, Borivali",
+                linguisticMinority: "CHRISTIAN",
+
+                branches: {
+                    COMPUTERS: {
+                        seats: 180,
+                        CET: {
+                            Round1: {
+                                Open: 95.853,
+                                Ladies: 95.1776,
+                                TFWS: 96.169,
+                                MI: 66.8404,
+                                ranks: { Open: 12515, Ladies: 14615, TFWS: 11616, MI: 89640 }
+                            },
+                            Round2: {
+                                Open: 95.8374,
+                                Ladies: 95.1776,
+                                TFWS: 96.1688,
+                                MI: 66.8404,
+                                ranks: { Open: 12595, Ladies: 14622, TFWS: 11616, MI: 89640 }
+                            },
+                            Round3: {
+                                Open: 95.8374,
+                                Ladies: 95.1776,
+                                TFWS: 96.1687,
+                                MI: 66.8404,
+                                ranks: { Open: 12595, Ladies: 14622, TFWS: 11616, MI: 89640 }
+                            }
+                        }
+                    },
+                    IT: {
+                        name: "Information Technology",
+                        seats: 120,
+                        CET: {
+                            Round1: {
+                                Open: 95.3016,
+                                Ladies: 94.6574,
+                                TFWS: 95.5459,
+                                MI: 36.9291,
+                                ranks: { Open: 14135, Ladies: 16058, TFWS: 13472, MI: 141657 }
+                            },
+                            Round2: {
+                                Open: 94.8245,
+                                Ladies: 94.0609,
+                                TFWS: 95.5459,
+                                MI: 36.9291,
+                                ranks: { Open: 15556, Ladies: 17897, TFWS: 13472, MI: 141657 }
+                            },
+                            Round3: {
+                                Open: 94.8245,
+                                Ladies: 94.0609,
+                                TFWS: 95.5459,
+                                MI: 36.9291,
+                                ranks: { Open: 15556, Ladies: 17897, TFWS: 13472, MI: 141657 }
+                            }
+                        }
+                    },
+                    ELECTRICAL: {
+                        name: "Electrical Engineering",
+                        seats: 60,
+                        CET: {
+                            Round1: {
+                                Open: 86.8553,
+                                Ladies: 85.4384,
+                                TFWS: null,
+                                MI: null,
+                                ranks: { Open: 38468, Ladies: 42383, TFWS: null, MI: null }
+                            },
+                            Round2: {
+                                Open: 79.6527,
+                                Ladies: 75.0114,
+                                TFWS: null,
+                                MI: 68.4737,
+                                ranks: { Open: 58274, Ladies: 70180, TFWS: null, MI: 85678 }
+                            },
+                            Round3: {
+                                Open: 65.2878,
+                                Ladies: 68.1767,
+                                TFWS: null,
+                                MI: 68.473714,
+                                ranks: { Open: 93257, Ladies: 86393, TFWS: null, MI: 85678 }
+                            }
+                        }
+                    },
+                    EXTC: {
+                        name: "Electronics & Telecommunication",
+                        seats: 120,
+                        CET: {
+                            Round1: {
+                                Open: 91.3239,
+                                Ladies: 91.7924,
+                                TFWS: 90.3887,
+                                MI: null,
+                                ranks: { Open: 25828, Ladies: 24639, TFWS: 28647, MI: null }
+                            },
+                            Round2: {
+                                Open: 90.2977,
+                                Ladies: 90.4058,
+                                TFWS: 90.389,
+                                MI: 84.8861,
+                                ranks: { Open: 28956, Ladies: 28571, TFWS: 28647, MI: 43838 }
+                            },
+                            Round3: {
+                                Open: 90.2977,
+                                Ladies: 89.4520,
+                                TFWS: 90.298,
+                                MI: 21.036824,
+                                ranks: { Open: 28956, Ladies: 31203, TFWS: 28991, MI: 161402 }
+                            }
+                        }
+                    },
+                    MECHANICAL: {
+                        seats: 60,
+                        CET: {
+                            Round1: {
+                                Open: 86.1970,
+                                Ladies: 82.1767,
+                                TFWS: 86.8967,
+                                MI: null,
+                                ranks: { Open: 40276, Ladies: 51570, TFWS: 38231, MI: null }
+                            },
+                            Round2: {
+                                Open: 48.0649,
+                                Ladies: 47.0114,
+                                TFWS: 86.897,
+                                MI: 70.5008,
+                                ranks: { Open: 124664, Ladies: 126751, TFWS: 38231, MI: 81334 }
+                            },
+                            Round3: {
+                                Open: 84.0259,
+                                Ladies: 63.5370,
+                                TFWS: 86.897,
+                                MI: 7.3207233,
+                                ranks: { Open: 46502, Ladies: 95364, TFWS: 38231, MI: 174318 }
+                            }
+                        }
+                    },
+                    ECS: {
+                        name: "Electronics & Computer Science",
+                        seats: 60,
+                        CET: {
+                            Round1: {
+                                Open: 93.7641,
+                                Ladies: 93.8339,
+                                TFWS: 92.9153,
+                                MI: 4.9090,
+                                ranks: { Open: 18700, Ladies: 18690, TFWS: 21236, MI: 176200 }
+                            },
+                            Round2: {
+                                Open: 93.5275,
+                                Ladies: 91.2437,
+                                TFWS: 92.915,
+                                MI: 91.6558,
+                                ranks: { Open: 19424, Ladies: 26244, TFWS: 21236, MI: 24890 }
+                            },
+                            Round3: {
+                                Open: 93.3795,
+                                Ladies: 91.2437,
+                                TFWS: 92.915,
+                                MI: 2.0203342,
+                                ranks: { Open: 19886, Ladies: 26244, TFWS: 21236, MI: 178315 }
+                            }
+                        }
+                    },
+                    AIML: {
+                        name: "Artificial Intelligence & Machine Learning",
+                        seats: 60,
+                        CET: {
+                            Round1: {
+                                Open: 94.5541,
+                                Ladies: 94.6904,
+                                TFWS: 95.0008,
+                                MI: 28.0884,
+                                ranks: { Open: 16441, Ladies: 15932, TFWS: 15132, MI: 152822 }
+                            },
+                            Round2: {
+                                Open: 94.5915,
+                                Ladies: 93.8493,
+                                TFWS: 95.001,
+                                MI: 28.0884,
+                                ranks: { Open: 16274, Ladies: 18579, TFWS: 15132, MI: 152822 }
+                            },
+                            Round3: {
+                                Open: 94.0879,
+                                Ladies: 93.8339,
+                                TFWS: 95.001,
+                                MI: 21.622184,
+                                ranks: { Open: 17812, Ladies: 18647, TFWS: 15132, MI: 160252 }
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                name: "Rajiv Gandhi Institute of Technology, Versova Andheri",
+                linguisticMinority: "NON_MINORITY",
+                branches: {
+                    COMPUTERS: {
+                        seats: 120,
+                        CET: {
+                            Round1: { Open: 95.715, SC: 92.7704, ST: 70.8723, OBC: 94.6896, Ladies: 95.7154, TFWS: 97.178, EWS: 91.2742 },
+                            Round2: { Open: 95.3912, SC: 92.2551, ST: 70.8723, OBC: 94.3332, Ladies: 95.7154, TFWS: 97.1783, EWS: 91.2742 },
+                            Round3: { Open: 95.1776, SC: 92.25507, ST: 70.61786, OBC: 93.9914, Ladies: 95.5828, TFWS: 95.8529, EWS: 89.8898 }
+                        }
+                    },
+                    IT: {
+                        name: "Information Technology",
+                        seats: 120,
+                        CET: {
+                            Round1: { Open: 94.7537, SC: 92.2023, ST: 60.1292, OBC: 93.2548, Ladies: 94.3463, TFWS: 95.4729, EWS: 88.9034 },
+                            Round2: { Open: 93.6359, SC: 91.1979, ST: 60.1292, OBC: 91.7924, Ladies: 93.8694, TFWS: 95.1961, EWS: 88.9034 },
+                            Round3: { Open: 93.285, SC: 90.40575, ST: 43.1231, OBC: 91.7924, Ladies: 93.1132, TFWS: 95.1705, EWS: 88.0194 }
+                        }
+                    },
+                    EXTC: {
+                        name: "Electronics & Telecommunication",
+                        seats: 120,
+                        CET: {
+                            Round1: { Open: 90.0724, SC: 84.2157, ST: 57.1543, OBC: 86.2308, Ladies: 89.3322, TFWS: 90.4058, EWS: 72.5042 },
+                            Round2: { Open: 89.1052, SC: 80.4299, ST: 23.9455, OBC: 82.1494, Ladies: 89.3322, TFWS: 90.406, EWS: 62.2535 },
+                            Round3: { Open: 89.1052, SC: 80.42988, ST: 23.9455, OBC: 82, Ladies: 89.3322, TFWS: 90.406, EWS: 60.5 }
+                        }
+                    },
+                    MECHANICAL: {
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 88.0525, SC: 80.2358, ST: null, OBC: 82.2449, Ladies: 84.5242, TFWS: 84.4941, EWS: 40.1586 },
+                            Round2: { Open: 87.0845, SC: 72.1239, ST: 32.8923, OBC: 64.6500, Ladies: 82.0158, TFWS: 84.511, EWS: 36.9291 },
+                            Round3: { Open: 87.5123, SC: 72.12391, ST: 32.8923, OBC: 65, Ladies: 78.5613, TFWS: 84.511, EWS: 36.9 }
+                        }
+                    },
+                    AIDS: {
+                        name: "Artificial Intelligence & Data Science",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 94.8263, SC: 91.5510, ST: null, OBC: 93.0071, Ladies: 94.0879, TFWS: 94.7727, EWS: 87.5036 },
+                            Round2: { Open: 93.9033, SC: 89.9514, ST: 41.0394, OBC: 91.2510, Ladies: 93.1822, TFWS: 93.972, EWS: 87.5036 },
+                            Round3: { Open: 93.7093, SC: 89.95138, ST: 41.0394, OBC: 91, Ladies: 92.6571, TFWS: 93.972, EWS: 87.5 }
+                        }
+                    }
+                }
+            },
+            {
+                name: "Xavier's Institute of Engineering, Mahim",
+                linguisticMinority: "ROMAN_CATHOLIC_CHRISTIAN",
+                branches: {
+                    COMPUTERS: {
+                        seats: 90,
+                        CET: {
+                            Round1: { Open: 95.664, Ladies: 95.3446, TFWS: 96.326, MI: 4.9022 },
+                            Round2: { Open: 94.8243, Ladies: 95.2642, TFWS: 95.8257, MI: 0.3414 },
+                            Round3: { Open: 94.7887, Ladies: 94.5727, TFWS: 95.82572, MI: 0.3414 }
+                        }
+                    },
+                    IT: {
+                        name: "Information Technology",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 95.3932, Ladies: 94.3463, TFWS: 95.8257, MI: 8.4113 },
+                            Round2: { Open: 94.3921, Ladies: 93.7136, TFWS: 95.1705, MI: 6.2331 },
+                            Round3: { Open: 94.1713, Ladies: 93.8710, TFWS: 94.5915, MI: 6.8368 }
+                        }
+                    },
+                    EXTC: {
+                        name: "Electronics & Telecommunication",
+                        seats: 30,
+                        CET: {
+                            Round1: { Open: 92.5368, Ladies: 89.8015, TFWS: 90.9018, MI: 34.8002 },
+                            Round2: { Open: 88.5552, Ladies: 87.4750, TFWS: 90.480, MI: 34.8002 },
+                            Round3: { Open: 88.0536, Ladies: 87.4750, TFWS: 90.480, MI: 34.800209 }
+                        }
+                    },
+                    CSE_IOT: {
+                        name: "Computer Science Engineering (IoT)",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 94.5994, Ladies: 93.1822, TFWS: 93.9914, MI: 30.9542 },
+                            Round2: { Open: 92.5961, Ladies: 91.9393, TFWS: 92.849, MI: 3.8709 },
+                            Round3: { Open: 93.2978, Ladies: 91.9393, TFWS: 92.849, MI: 3.8708587 }
+                        }
+                    }
+                }
+            },
+            {
+                name: "S.I.E.S Graduate School of Technology, Nerul",
+                linguisticMinority: "TAMIL",
+                branches: {
+                    COMPUTERS: {
+                        seats: 180,
+                        CET: {
+                            Round1: { Open: 95.473, Ladies: 95.6350, TFWS: 96.326, MI: 42.7253 },
+                            Round2: { Open: 95.3558, Ladies: 95.3912, TFWS: 96.3258, MI: 42.7253 },
+                            Round3: { Open: 95.3016, Ladies: 95.3912, TFWS: 96.32584, MI: 42.7253 }
+                        }
+                    },
+                    IT: {
+                        name: "Information Technology",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 95.0779, Ladies: 94.8245, TFWS: 96.1353, MI: 3.8940 },
+                            Round2: { Open: 94.7537, Ladies: 94.6574, TFWS: 96.1353, MI: 3.8940 },
+                            Round3: { Open: 94.75369, Ladies: 94.6574, TFWS: 95.7555, MI: 3.8940 }
+                        }
+                    },
+                    EXTC: {
+                        name: "Electronics & Telecommunication",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 91.9724, Ladies: 92.3221, TFWS: 91.4912, MI: 8.8406 },
+                            Round2: { Open: 88.7353, Ladies: 91.9724, TFWS: 92.021, MI: 8.8406 },
+                            Round3: { Open: 88.7353, Ladies: 91.4912, TFWS: 92.021, MI: 8.8405987 }
+                        }
+                    },
+                    ECS: {
+                        name: "Electronics & Computer Science",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 92.8872, Ladies: 92.5934, TFWS: 93.2850, MI: 48.6138 },
+                            Round2: { Open: 91.1979, Ladies: 91.1269, TFWS: 93.285, MI: 48.6138 },
+                            Round3: { Open: 91.1979, Ladies: 91.5510, TFWS: 92.537, MI: 48.613805 }
+                        }
+                    },
+                    CSE_IOT: {
+                        name: "Computer Science Engineering (IoT & Cyber Security)",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 93.5379, Ladies: 92.6336, TFWS: 94.0592, MI: 17.7534 },
+                            Round2: { Open: 92.0214, Ladies: 92.6336, TFWS: 92.657, MI: 27.1291 },
+                            Round3: { Open: 92.0214, Ladies: 92.6336, TFWS: 92.657, MI: 27.129104 }
+                        }
+                    },
+                    AIML: {
+                        name: "Artificial Intelligence & Machine Learning",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 93.8694, Ladies: 93.2799, TFWS: 94.9943, MI: 35.3791 },
+                            Round2: { Open: 93.6592, Ladies: 92.6351, TFWS: 94.994, MI: 15.9803 },
+                            Round3: { Open: 93.2548, Ladies: 92.6351, TFWS: 94.466, MI: 1.8070756 }
+                        }
+                    },
+                    AIDS: {
+                        name: "Artificial Intelligence & Data Science",
+                        seats: 120,
+                        CET: {
+                            Round1: { Open: 94.3030, Ladies: 93.8339, TFWS: 95.8848, MI: 13.0626 },
+                            Round2: { Open: 93.3342, Ladies: 93.6711, TFWS: 95.546, MI: 13.0626 },
+                            Round3: { Open: 93.3342, Ladies: 93.6711, TFWS: 95.546, MI: 13.062618 }
+                        }
+                    }
+                }
+            },
+            {
+                name: "Thakur College of Engineering and Technology, Shyamnarayan Kandivali",
+                linguisticMinority: "HINDI",
+                branches: {
+                    COMPUTERS: {
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 94.783, Ladies: 95.5544, TFWS: 96.051, MI: 87.5036 },
+                            Round2: { Open: 94.1713, Ladies: 94.1729, TFWS: 94.6904, MI: 87.2785 },
+                            Round3: { Open: 93.9959, Ladies: 93.7093, TFWS: 94.69038, MI: 87.2785 }
+                        }
+                    },
+                    IT: {
+                        name: "Information Technology",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 94.0243, Ladies: 92.1089, TFWS: 93.5225, MI: 84.6087 },
+                            Round2: { Open: 92.0938, Ladies: 92.1231, TFWS: 93.5225, MI: 84.6087 },
+                            Round3: { Open: 91.23792, Ladies: 91.5510, TFWS: 92.4262, MI: 84.6087 }
+                        }
+                    },
+                    MECHANICAL: {
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 84.0259, Ladies: 81.0485, TFWS: 80.6345, MI: 4.5425 },
+                            Round2: { Open: 79.8240, Ladies: 76.7776, TFWS: 76.127, MI: 4.5425 },
+                            Round3: { Open: 79.8240, Ladies: 67.2945, TFWS: 76.127, MI: 4.542479 }
+                        }
+                    },
+                    ECS: {
+                        name: "Electronics & Computer Science",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 89.3223, Ladies: 89.7107, TFWS: 89.4790, MI: 75.8855 },
+                            Round2: { Open: 88.5539, Ladies: 85.5352, TFWS: 89.479, MI: 76.4789 },
+                            Round3: { Open: 88.5680, Ladies: 85.5352, TFWS: 89.479, MI: 76.4789 }
+                        }
+                    },
+                    CSE_AIML: {
+                        name: "Computer Science Engineering (AI & ML)",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 93.0349, Ladies: 91.2368, TFWS: 92.3221, MI: 83.7530 },
+                            Round2: { Open: 92.0088, Ladies: 92.9153, TFWS: 92.322, MI: 83.7530 },
+                            Round3: { Open: 92.0938, Ladies: 92.9153, TFWS: 93.359, MI: 83.75297 }
+                        }
+                    }
+                }
+            },
+            {
+                name: "Bharati Vidyapeeth, Kharghar",
+                linguisticMinority: "NON_MINORITY",
+                branches: {
+                    COMPUTERS: {
+                        seats: 120,
+                        CET: {
+                            Round1: { Open: 94.754, SC: 91.2742, ST: 79.4895, OBC: 93.7641, Ladies: 94.5895, TFWS: 95.649, EWS: 89.5570 },
+                            Round2: { Open: 93.7641, SC: 90.4058, ST: 81.1614, OBC: 92.8306, Ladies: 93.6811, TFWS: 93.6708, EWS: 87.5900 },
+                            Round3: { Open: 93.7641, SC: 90.5124, ST: 81.1614, OBC: 92.2260, Ladies: 93.3342, TFWS: 93.67078, EWS: 86.2308 }
+                        }
+                    },
+                    IT: {
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 93.9959, SC: 91.1269, ST: 46.3658, OBC: 93.2404, Ladies: 93.0071, TFWS: 94.3921, EWS: 86.8242 },
+                            Round2: { Open: 92.4301, SC: 87.5599, ST: 46.3658, OBC: 92.1231, Ladies: 92.9153, TFWS: 94.3921, EWS: 83.6467 },
+                            Round3: { Open: 92.43008, SC: 88.60373, ST: 46.3658, OBC: 92.0088, Ladies: 92.9153, TFWS: 94.3921, EWS: 81.8152 }
+                        }
+                    },
+                    EXTC: {
+                        seats: 120,
+                        CET: {
+                            Round1: { Open: 85.5352, SC: 80.6345, OBC: 81.2929, Ladies: 86.1970, TFWS: 87.6637, EWS: 69.7604 },
+                            Round2: { Open: 82.7776, SC: 76.6200, ST: 82.1494, OBC: 79.1319, Ladies: 83.5806, TFWS: 87.664, EWS: 61.6355 },
+                            Round3: { Open: 82.7776, SC: 76.61998, ST: 82.1494, OBC: 79.131887, Ladies: 83.8466, TFWS: 87.664, EWS: 57.991941 }
+                        }
+                    },
+                    INSTRUMENTATION: {
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 65.4406, SC: 40.2848, ST: 1.8201, OBC: 52.0861, Ladies: 66.8404, TFWS: 77.2075, EWS: 1.5491 },
+                            Round2: { Open: 65.4406, SC: 36.9291, ST: 1.8201, OBC: 52.0861, Ladies: 66.8404, TFWS: 71.404, EWS: 1.5491 },
+                            Round3: { Open: 65.4406, SC: 36.92915, ST: 1.8201, OBC: 52.086104, Ladies: 66.8404, TFWS: 71.404, EWS: 1.5490684 }
+                        }
+                    },
+                    CHEMICAL: {
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 88.0525, SC: 70.4817, OBC: 83.5806, Ladies: 89.5918, TFWS: 44.3676, EWS: 88.5014 },
+                            Round2: { Open: 80.5929, SC: 70.4817, ST: 79.5236, OBC: 76.7776, Ladies: 89.5918, TFWS: 87.497, EWS: 33.1000 },
+                            Round3: { Open: 80.5929, SC: 70.48173, ST: 79.1872, OBC: 76.777625, Ladies: 89.5918, TFWS: 87.497, EWS: 59.050919 }
+                        }
+                    },
+                    MECHANICAL: {
+                        seats: 120,
+                        CET: {
+                            Round1: { Open: 77.7152, SC: 60.5031, OBC: 68.4737, Ladies: 60.2922, TFWS: 84.2431, EWS: 28.7733 },
+                            Round2: { Open: 63.2340, SC: 52.2047, ST: 58.1588, OBC: 57.2163, Ladies: 55.1151, TFWS: 79.747, EWS: 28.7733 },
+                            Round3: { Open: 63.2340, SC: 47.90767, ST: 58.1588, OBC: 60.074375, Ladies: 55.1151, TFWS: 79.747, EWS: 28.773271 }
+                        }
+                    }
+                }
+            },
+            // {
+            //     name: "Bhaghubhai,Vileparle",
+            //     branches: {
+            //         COMPUTERS: { CET: { Open: 16913, JEE_M: 9850 }, JEE: { Open: 33117, JEE_M: 18066 } },
+            //         IT: { CET: { Open: 34222, JEE_M: 17640 }, JEE: { Open: null, JEE_M: null } },
+            //         AIDS: { CET: { Open: 88.5013, JEE_M: 82.6084 }, JEE: { Open: null, JEE_M: null } },
+            //         AIML: { CET: { Open: null, JEE_M: null }, JEE: { Open: null, JEE_M: null } },
+            //         EXTC: { CET: { Open: 47090, JEE_M: 27700 }, JEE: { Open: 30714, JEE_M: 18609 } },
+            //         ECS: { CET: { Open: 83.7447, JEE_M: 73.7173 }, JEE: { Open: 89.6809, JEE_M: 81.7745 } },
+            //         MECH: { CET: { Open: 40441, JEE_M: 20313 }, JEE: { Open: 35260, JEE_M: 18956 } }
+            //     }
+            // },
+            {
+                name: "Atharva College, Malad",
+                linguisticMinority: "NON_MINORITY",
+                branches: {
+                    COMPUTERS: {
+                        seats: 120,
+                        CET: {
+                            Round1: { Open: 94.115, SC: 91.2379, ST: 59.9792, OBC: 92.2260, Ladies: 94.2444, TFWS: 94.240, EWS: 86.7140 },
+                            Round2: { Open: 93.8493, SC: 88.0194, ST: 59.9792, OBC: 91.5510, Ladies: 94.2444, TFWS: 94.2401, EWS: 84.7973 },
+                            Round3: { Open: 93.8493, SC: 88.019, ST: 59.9792, OBC: 91.5510, Ladies: 94.2444, TFWS: 94.2401, EWS: 84.6087 }
+                        }
+                    },
+                    IT: {
+                        seats: 120,
+                        CET: {
+                            Round1: { Open: 92.6571, SC: 87.9207, ST: 47.9077, OBC: 91.3662, Ladies: 93.7093, TFWS: 93.9575, EWS: 80.7841 },
+                            Round2: { Open: 91.9724, SC: 84.3180, ST: 36.6611, OBC: 90.1649, Ladies: 87.4496, TFWS: 93.4765, EWS: 79.6527 },
+                            Round3: { Open: 91.9723, SC: 84.318, ST: 22.97476, OBC: 89.5570, Ladies: 91.2733, TFWS: 93.2978, EWS: 78.9173 }
+                        }
+                    },
+                    ELECTRICAL: {
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 82.7087, SC: 79.1872, OBC: 67.8623, Ladies: 79.8240, EWS: 15.1214 },
+                            Round2: { Open: 76.9332, SC: 79.9360, ST: 76.7776, OBC: 56.8466, Ladies: 79.8240, EWS: 24.7658 },
+                            Round3: { Open: 78.1497, SC: 75.525, ST: 76.7776, OBC: 58.57869, Ladies: 82.1767, EWS: 28.70037 }
+                        }
+                    },
+                    EXTC: {
+                        seats: 120,
+                        CET: {
+                            Round1: { Open: 86.9702, SC: 77.8445, OBC: 84.4941, Ladies: 87.5123, TFWS: 85.5052, EWS: 51.2170 },
+                            Round2: { Open: 83.7448, SC: 76.1269, ST: 89.4790, OBC: 80.5929, Ladies: 82.8861, TFWS: 85.343, EWS: 13.7020 },
+                            Round3: { Open: 84.3370, SC: 76.127, ST: 82.7820, OBC: 80.58967, Ladies: 83.4700, TFWS: 85.343, EWS: 13.702 }
+                        }
+                    },
+                    ECS: {
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 90.9280, SC: 82.1767, OBC: 88.1228, Ladies: 91.1269, TFWS: 90.8293, EWS: 63.2340 },
+                            Round2: { Open: 89.6810, SC: 82.1767, ST: 89.4790, OBC: 87.4969, Ladies: 91.1269, TFWS: 90.829, EWS: 63.2340 },
+                            Round3: { Open: 89.7107, SC: 82.177, ST: 89.4790, OBC: 91.12694, Ladies: 89.1600, TFWS: 90.829, EWS: 63.23401 }
+                        }
+                    }
+                }
+            },
+            {
+                name: "Shah & Anchor Engineering College, Chembur",
+                linguisticMinority: "GUJARATI",
+                branches: {
+                    COMPUTERS: {
+                        seats: 180,
+                        CET: {
+                            Round1: { Open: 93.903, Ladies: 94.0759, TFWS: 95.236, MI: 84.5731 },
+                            Round2: { Open: 93.6811, Ladies: 93.8710, TFWS: 95.2363, MI: 82.8590 },
+                            Round3: { Open: 93.5407, Ladies: 93.6811, TFWS: 95.23628, MI: 82.8590 }
+                        }
+                    },
+                    IT: {
+                        seats: 120,
+                        CET: {
+                            Round1: { Open: 92.4273, Ladies: 92.8306, TFWS: 94.5227, MI: 75.5247 },
+                            Round2: { Open: 91.9724, Ladies: 92.1089, TFWS: 94.5227, MI: 73.8893 },
+                            Round3: { Open: 91.97235, Ladies: 92.1089, TFWS: 94.3030, MI: 74.4422 }
+                        }
+                    },
+                    CYBER_SECURITY: {
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 90.4350, Ladies: 88.9267, TFWS: 93.6708, MI: 67.8623 },
+                            Round2: { Open: 89.4520, Ladies: 88.6963, TFWS: 91.668, MI: 67.8623 },
+                            Round3: { Open: 89.4520, Ladies: 88.6963, TFWS: 91.668, MI: 67.862286 }
+                        }
+                    },
+                    EXTC: {
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 88.5680, Ladies: 86.8891, TFWS: 89.3322, MI: 11.7157 },
+                            Round2: { Open: 86.1433, Ladies: 86.2308, TFWS: 86.897, MI: 11.7157 },
+                            Round3: { Open: 86.1433, Ladies: 86.1970, TFWS: 86.897, MI: 11.715739 }
+                        }
+                    },
+                    VLSI: {
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 78.9120, Ladies: 78.9561, TFWS: 79.1319, MI: 14.0490 },
+                            Round2: { Open: 77.6411, Ladies: 78.9561, TFWS: 80.786, MI: 7.7922 },
+                            Round3: { Open: 77.6411, Ladies: 78.9561, TFWS: 79.346, MI: 7.7921536 }
+                        }
+                    },
+                    ECS: {
+                        seats: 120,
+                        CET: {
+                            Round1: { Open: 88.6037, Ladies: 88.8902, TFWS: 90.0772, MI: 40.2848 },
+                            Round2: { Open: 88.0536, Ladies: 88.2041, TFWS: 90.077, MI: 40.2848 },
+                            Round3: { Open: 88.0536, Ladies: 88.2041, TFWS: 90.077, MI: 40.284834 }
+                        }
+                    },
+                    ELECTRONICS_COMMUNICATION: {
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 81.2084, Ladies: 80.7841, TFWS: 83.5369, MI: 0.1496 },
+                            Round2: { Open: 79.4895, Ladies: 80.7841, TFWS: 80.786, MI: 0.1496 },
+                            Round3: { Open: 79.5236, Ladies: 80.7841, TFWS: 81.402, MI: 0.1496073 }
+                        }
+                    },
+                    AIDS: {
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 92.2023, Ladies: 91.6681, TFWS: 94.6435, MI: 76.2466 },
+                            Round2: { Open: 91.6275, Ladies: 91.6681, TFWS: 94.643, MI: 75.3516 },
+                            Round3: { Open: 91.6275, Ladies: 91.6681, TFWS: 94.643, MI: 76.126878 }
+                        }
+                    }
+                }
+            },
+            {
+                name: "Pillai College of Engineering, New Panvel",
+                linguisticMinority: "MALAYALAM",
+                branches: {
+                    COMPUTERS: {
+                        seats: 180,
+                        CET: {
+                            Round1: { Open: 93.849, Ladies: 92.7704, TFWS: 95.755, MI: 4.3685 },
+                            Round2: { Open: 92.9153, Ladies: 92.7704, TFWS: 94.9943, MI: 4.3685 },
+                            Round3: { Open: 92.9153, Ladies: 92.7704, TFWS: 94.99434, MI: 4.3685 }
+                        }
+                    },
+                    IT: {
+                        seats: 120,
+                        CET: {
+                            Round1: { Open: 92.5257, Ladies: 91.9724, TFWS: 93.6811, MI: 19.3655 },
+                            Round2: { Open: 91.5478, Ladies: 91.5585, TFWS: 93.6811, MI: 19.3655 },
+                            Round3: { Open: 91.54776, Ladies: 91.9393, TFWS: 93.6811, MI: 19.3655 }
+                        }
+                    },
+                    EXTC: {
+                        seats: 120,
+                        CET: {
+                            Round1: { Open: 86.2308, Ladies: 85.4557, TFWS: 87.9207 },
+                            Round2: { Open: 83.9659, Ladies: 83.0327, TFWS: 87.921, MI: 78.9969 },
+                            Round3: { Open: 84.0259, Ladies: 83.0327, TFWS: 87.921, MI: 89.064429 }
+                        }
+                    },
+                    AUTOMOBILE: {
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 75.5247, Ladies: 46.5103, MI: 69.2755 },
+                            Round2: { Open: 74.5088, Ladies: 46.5103, MI: 69.2755 },
+                            Round3: { Open: 74.5088, Ladies: 46.5103, MI: 69.275473 }
+                        }
+                    },
+                    MECHANICAL: {
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 83.8466, Ladies: 71.7166, TFWS: 84.8482, MI: 0.8561 },
+                            Round2: { Open: 76.5405, Ladies: 62.8734, TFWS: 80.634, MI: 0.8561 },
+                            Round3: { Open: 76.5405, Ladies: 62.8734, TFWS: 80.634, MI: 0.8560505 }
+                        }
+                    },
+                    ECS: {
+                        seats: 90,
+                        CET: {
+                            Round1: { Open: 89.2835, Ladies: 88.5552, TFWS: 91.6558, MI: 17.7766 },
+                            Round2: { Open: 88.5680, Ladies: 88.5552, TFWS: 91.656, MI: 17.7766 },
+                            Round3: { Open: 88.5680, Ladies: 88.5552, TFWS: 91.656, MI: 17.776617 }
+                        }
+                    }
+                }
+            },
+            {
+                name: "Terna Engineering College, Nerul",
+                linguisticMinority: "NON_MINORITY",
+                branches: {
+                    COMPUTERS: {
+                        seats: 180,
+                        CET: {
+                            Round1: { Open: 93.541, SC: 88.5014, ST: 51.1396, OBC: 92.1231, Ladies: 93.4772, TFWS: 94.895, EWS: 86.1433 },
+                            Round2: { Open: 92.6571, SC: 86.2658, ST: 51.1396, OBC: 90.9519, Ladies: 93.2139, TFWS: 94.6896, EWS: 83.0327 },
+                            Round3: { Open: 92.6336, SC: 86.2658, ST: 51.13964, OBC: 91.2379, Ladies: 93.2139, TFWS: 94.6896, EWS: 83.0327 }
+                        }
+                    },
+                    IT: {
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 92.0938, SC: 87.2953, ST: 57.3311, OBC: 91.5510, Ladies: 92.6336, TFWS: 93.8768, EWS: 81.8420 },
+                            Round2: { Open: 91.6681, SC: 85.2572, ST: 57.3311, OBC: 90.1649, Ladies: 91.9366, TFWS: 93.8768, EWS: 79.1872 },
+                            Round3: { Open: 91.5585, SC: 85.40821, ST: 57.3311, OBC: 90.1066, Ladies: 91.9366, TFWS: 93.8768, EWS: 79.1872 }
+                        }
+                    },
+                    CIVIL: {
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 74.1163, SC: 49.5131, OBC: 53.7695, Ladies: 54.0550, EWS: 15.9990 },
+                            Round2: { Open: 74.1163, SC: 22.9748, ST: 44.3676, OBC: 52.8149, Ladies: 60.2922, EWS: 68.7156 },
+                            Round3: { Open: 74.1163, SC: 40.28483, ST: 73.3652, OBC: 52.8149, Ladies: 60.2922, EWS: 68.7156 }
+                        }
+                    },
+                    AIDS: {
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 92.2551, SC: 87.4750, ST: 41.3261, OBC: 89.3400, Ladies: 93.0349, TFWS: 93.3592, EWS: 83.0327 },
+                            Round2: { Open: 91.4912, SC: 87.4750, ST: 41.3261, OBC: 89.2150, Ladies: 92.7090, TFWS: 93.214, EWS: 79.9360 },
+                            Round3: { Open: 90.4629, SC: 87.4750, ST: 41.3261, OBC: 89.2150, Ladies: 91.4912, TFWS: 93.214, EWS: 79.936 }
+                        }
+                    },
+                    EXTC: {
+                        seats: 120,
+                        CET: {
+                            Round1: { Open: 83.8466, SC: 78.1974, OBC: 80.7859, Ladies: 86.9702, TFWS: 84.3939, EWS: 25.0606 },
+                            Round2: { Open: 81.0485, SC: 76.2466, ST: 80.4299, OBC: 76.9332, Ladies: 82.0158, TFWS: 84.394, EWS: 22.5020 },
+                            Round3: { Open: 81.2929, SC: 76.2466, ST: 80.4299, OBC: 77.20746, Ladies: 82.0158, TFWS: 84.394, EWS: 22.5020 }
+                        }
+                    },
+                    ELECTRONICS: {
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 81.3739, SC: 65.8812, OBC: 76.5405, Ladies: 85.5352, TFWS: 83.9659, EWS: 21.6222 },
+                            Round2: { Open: 73.5848, SC: 65.8812, ST: 73.4250, OBC: 67.8441, Ladies: 76.4789, TFWS: 79.936, EWS: 29.6396 },
+                            Round3: { Open: 73.5848, SC: 65.8812, ST: 73.4250, OBC: 67.29448, Ladies: 76.4789, TFWS: 79.936, EWS: 29.6396 }
+                        }
+                    },
+                    MECHANICAL: {
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 77.8466, SC: 67.6870, OBC: 67.5034, Ladies: 63.5370, EWS: 20.7289 },
+                            Round2: { Open: 65.5509, SC: 59.0509, ST: 61.3262, OBC: 54.0550, Ladies: 63.5370 },
+                            Round3: { Open: 68.4786, SC: 95026, ST: 63.9613, OBC: 54.0550, Ladies: 63.5370, EWS: 54.05502 }
+                        }
+                    },
+                    MECHATRONICS: {
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 81.3739, SC: 70.8723, OBC: 44.8930, Ladies: 80.3003, TFWS: 85.5052, EWS: 13.2388 },
+                            Round2: { Open: 72.3243, SC: 68.9053, ST: 70.8723, OBC: 44.8930, Ladies: 65.8812, TFWS: 85.505, EWS: 13.2388 },
+                            Round3: { Open: 72.3243, SC: 68.9053, ST: 70.8723, OBC: 44.8930, Ladies: 65.8812, TFWS: 85.505, EWS: 7.792154 }
+                        }
+                    }
+                }
+            },
+            {
+                name: "Vidyavardhini's College of Engineering & Technology (Vartak), Vasai",
+                linguisticMinority: "NON_MINORITY",
+                branches: {
+                    COMPUTERS: {
+                        seats: 120,
+                        CET: {
+                            Round1: { Open: 93.049, SC: 85.5052, ST: 48.6138, OBC: 90.0186, Ladies: 93.0487, TFWS: 93.969, EWS: 82.6959 },
+                            Round2: { Open: 92.5368, SC: 78.9969, ST: 48.6138, OBC: 89.1946, Ladies: 92.3038, TFWS: 94.0592, EWS: 82.6959 },
+                            Round3: { Open: 92.5368, SC: 78.9969, ST: 48.6138, OBC: 89.1946, Ladies: 92.3038, TFWS: 93.9914, EWS: 82.6959 }
+                        }
+                    },
+                    IT: {
+                        seats: 120,
+                        CET: {
+                            Round1: { Open: 92.5257, SC: 85.3422, ST: 71.4038, OBC: 89.3072, Ladies: 92.3355, TFWS: 93.5275, EWS: 79.1319 },
+                            Round2: { Open: 91.6345, SC: 78.9561, ST: 71.4038, OBC: 89.0036, Ladies: 92.0088, TFWS: 92.1092, EWS: 75.2160 },
+                            Round3: { Open: 91.63454, SC: 78.9561, ST: 71.4038, OBC: 89.0036, Ladies: 92.0088, TFWS: 92.1092, EWS: 75.2160 }
+                        }
+                    },
+                    CIVIL: {
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 70.4093, SC: 42.8773, ST: 52.8149, OBC: 56.9588, Ladies: 62.2535, EWS: 16.3514 },
+                            Round2: { Open: 66.1855, SC: 32.0977, OBC: 17.7766, Ladies: 53.7424, EWS: 16.3514 },
+                            Round3: { Open: 66.1855, SC: 27.8154, ST: 54.1800, OBC: 3.89308, Ladies: 53.7424, EWS: 16.3514 }
+                        }
+                    },
+                    EXTC: {
+                        seats: 120,
+                        CET: {
+                            Round1: { Open: 86.0756, SC: 77.8411, OBC: 77.8207, Ladies: 86.8030, TFWS: 85.5760, EWS: 40.1586 },
+                            Round2: { Open: 82.5540, SC: 73.3652, ST: 82.4752, OBC: 75.5247, Ladies: 82.8590, TFWS: 85.576, EWS: 63.5258 },
+                            Round3: { Open: 82.5540, SC: 73.3652, ST: 82.4752, OBC: 75.5247, Ladies: 82.8590, TFWS: 85.576, EWS: 29.6396 }
+                        }
+                    },
+                    MECHANICAL: {
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 80.5929, SC: 56.5650, OBC: 67.6870, Ladies: 66.1855, TFWS: 81.4025, EWS: 8.4810 },
+                            Round2: { Open: 70.2544, SC: 28.7733, OBC: 59.8893, Ladies: 61.6355, TFWS: 81.402, EWS: 8.4810 },
+                            Round3: { Open: 70.2544, SC: 28.7733, OBC: 59.8893, Ladies: 54.7527, TFWS: 81.402, EWS: 8.48102 }
+                        }
+                    },
+                    CSE_DATA_SCIENCE: {
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 89.9248, SC: 78.9173, ST: 6.3063, OBC: 86.6548, Ladies: 89.8015, TFWS: 90.8059, EWS: 64.4664 },
+                            Round2: { Open: 88.6997, SC: 76.7998, ST: 6.3063, OBC: 86.0756, Ladies: 89.3907, TFWS: 90.806, EWS: 40.1586 },
+                            Round3: { Open: 88.6997, SC: 76.7998, ST: 6.3063, OBC: 86.0756, Ladies: 88.5014, TFWS: 90.806, EWS: 40.1586 }
+                        }
+                    },
+                    AIDS: {
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 91.7222, SC: 85.0744, ST: 18.7028, OBC: 89.8756, Ladies: 91.2733, TFWS: 93.2404, EWS: 78.9173 },
+                            Round2: { Open: 90.9280, SC: 79.4895, ST: 18.7028, OBC: 88.7743, Ladies: 90.8293, TFWS: 90.863, EWS: 74.4422 },
+                            Round3: { Open: 90.9280, SC: 79.4895, ST: 18.7028, OBC: 88.7743, Ladies: 90.0724, TFWS: 90.863, EWS: 73.3652 }
+                        }
+                    },
+                    ELECTRONICS_VLSI: {
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 71.5966, SC: 50.6004, OBC: 38.8850, Ladies: 76.7776, EWS: 41.8427 },
+                            Round2: { Open: 70.4093, SC: 49.7950, ST: 66.8505, OBC: 38.8850, Ladies: 77.5960 },
+                            Round3: { Open: 72.6096, SC: 55.3559, ST: 66.8505, OBC: 38.885, Ladies: 77.5960 }
+                        }
+                    }
+                }
+            },
+            {
+                name: "Datta Meghe Institute of Engineering Technology and Research, Airoli",
+                linguisticMinority: "NON_MINORITY",
+                branches: {
+                    COMPUTERS: {
+                        name: "Computer Engineering",
+                        seats: 120,
+                        CET: {
+                            Round1: { Open: 92.849, SC: 89.4520, ST: 68.1767, OBC: 91.6345, Ladies: 93.1559, TFWS: 94.554, EWS: 83.4700 },
+                            Round2: { Open: 92.8872, SC: 88.8902, ST: 65.4406, OBC: 91.2368, Ladies: 92.4273, TFWS: 94.5727, EWS: 82.2449 },
+                            Round3: { Open: 92.8872, SC: 88.8902, ST: 65.4406, OBC: 91.2368, Ladies: 92.4273, TFWS: 94.5727, EWS: 82.2449 }
+                        }
+                    },
+                    IT: {
+                        name: "Information Technology",
+                        seats: 180,
+                        CET: {
+                            Round1: { Open: 91.5510, SC: 86.7140, ST: 44.5064, OBC: 90.3848, Ladies: 91.4391, TFWS: 93.5225, EWS: 74.2767 },
+                            Round2: { Open: 90.3848, SC: 86.3062, ST: 44.5064, OBC: 89.3223, Ladies: 90.6757, TFWS: 93.5225, EWS: 71.7166 },
+                            Round3: { Open: 90.3848, SC: 86.3062, ST: 44.5064, OBC: 88.9267, Ladies: 90.6757, TFWS: 93.5225, EWS: 71.3989 }
+                        }
+                    },
+                    CIVIL: {
+                        name: "Civil Engineering",
+                        seats: 120,
+                        CET: {
+                            Round1: { Open: 73.4469, SC: 56.8466, ST: 7.5978, OBC: 63.5258, Ladies: 72.1239, TFWS: 73.8487, EWS: 77.1713 },
+                            Round2: { Open: 70.5216, SC: 27.6623, ST: 7.5978, OBC: 53.5178, Ladies: 58.1588, TFWS: 73.849, EWS: 16.2423 },
+                            Round3: { Open: 69.6279, SC: 27.6623, ST: 7.5978, OBC: 62.79581, Ladies: 58.1588, TFWS: 73.849, EWS: 15.59759 }
+                        }
+                    },
+                    EXTC: {
+                        name: "Electronics & Telecommunication",
+                        seats: 120,
+                        CET: {
+                            Round1: { Open: 83.6394, SC: 79.8240, ST: 24.7658, OBC: 80.4299, Ladies: 83.7448, TFWS: 84.5731, EWS: 27.4049 },
+                            Round2: { Open: 81.7098, SC: 73.7957, ST: 22.2282, OBC: 75.6213, Ladies: 82.8590, TFWS: 84.573, EWS: 34.1954 },
+                            Round3: { Open: 81.7098, SC: 73.7957, ST: 22.2282, OBC: 75.6213, Ladies: 82.8590, TFWS: 84.573, EWS: 34.1954 }
+                        }
+                    },
+                    CHEMICAL: {
+                        name: "Chemical Engineering",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 85.0982, SC: 69.7640, ST: null, OBC: 79.9360, Ladies: 87.1013, TFWS: null, EWS: 46.3828 },
+                            Round2: { Open: 81.6588, SC: 69.7640, ST: 77.8445, OBC: 70.8723, Ladies: 86.1433, TFWS: null, EWS: null },
+                            Round3: { Open: 81.6588, SC: 69.7640, ST: 81.3895, OBC: 69.81404, Ladies: null, TFWS: null, EWS: null }
+                        }
+                    },
+                    MECHANICAL: {
+                        name: "Mechanical Engineering",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 80.5897, SC: 75.3410, ST: null, OBC: 73.8893, Ladies: 74.9324, TFWS: null, EWS: 24.0054 },
+                            Round2: { Open: 70.5008, SC: 68.1767, ST: 68.4786, OBC: 66.8404, Ladies: 58.1159, TFWS: null, EWS: 24.0054 },
+                            Round3: { Open: 70.5008, SC: 68.1767, ST: 68.4786, OBC: 66.8404, Ladies: 58.1159, TFWS: null, EWS: 24.0054 }
+                        }
+                    },
+                    CIVIL_INFRASTRUCTURE: {
+                        name: "Civil & Infrastructure Engineering",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 69.4684, SC: 1.6171, ST: null, OBC: 62.7875, Ladies: 56.8466, TFWS: null, EWS: 34.5791 },
+                            Round2: { Open: 57.1543, SC: 1.6171, ST: null, OBC: 28.3301, Ladies: 56.8466, TFWS: null, EWS: 37.6014 },
+                            Round3: { Open: 57.1543, SC: 1.6171, ST: 41.3261, OBC: 28.3301, Ladies: 56.8466, TFWS: null, EWS: null }
+                        }
+                    },
+                    AIDS: {
+                        name: "Artificial Intelligence & Data Science",
+                        seats: 180,
+                        CET: {
+                            Round1: { Open: 89.8898, SC: 85.3422, ST: 49.7950, OBC: 88.5014, Ladies: 90.0183, TFWS: 91.5478, EWS: 72.6096 },
+                            Round2: { Open: 88.8902, SC: 82.5540, ST: 25.0606, OBC: 87.5599, Ladies: 90.0186, TFWS: 91.127, EWS: 65.7227 },
+                            Round3: { Open: 88.8902, SC: 82.5540, ST: 36.6611, OBC: 87.5599, Ladies: 90.0186, TFWS: 91.127, EWS: 63.53704 }
+                        }
+                    }
+                }
+            },
+            {
+                name: "Vasantdada, Sion", // Add the actual college name here
+                linguisticMinority: "NON_MINORITY",
+                branches: {
+                    COMPUTERS: {
+                        name: "Computer Engineering",
+                        seats: 120,
+                        CET: {
+                            Round1: { Open: 92.849, SC: 87.5123, ST: 38.7774, OBC: 90.8910, Ladies: 92.3371, TFWS: 93.752, EWS: 82.7087 },
+                            Round2: { Open: 92.4273, SC: 87.5123, ST: 64.4664, OBC: 88.9034, Ladies: 92.2994, TFWS: 93.7521, EWS: 79.5236 },
+                            Round3: { Open: 92.2994, SC: 86.13224, ST: 59.34459, OBC: 88.9034, Ladies: 92.2260, TFWS: 93.75209, EWS: 79.4055 }
+                        }
+                    },
+                    IT: {
+                        name: "Information Technology",
+                        seats: 120,
+                        CET: {
+                            Round1: { Open: 91.2379, SC: 85.2662, ST: 25.7846, OBC: 88.6997, Ladies: 90.7980, TFWS: 91.7850, EWS: 72.7751 },
+                            Round2: { Open: 89.9248, SC: 83.8466, ST: 24.7658, OBC: 87.3944, Ladies: 89.4908, TFWS: 91.7850, EWS: 70.8723 },
+                            Round3: { Open: 89.92483, SC: 83.84659, ST: 24.76579, OBC: 86.8891, Ladies: 89.1373, TFWS: 91.7850, EWS: 72.5042 }
+                        }
+                    },
+                    MECHATRONICS: {
+                        name: "Mechatronics Engineering",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 77.6411, SC: 61.8909, ST: null, OBC: 48.0649, Ladies: 60.2952, TFWS: 74.2767, EWS: 13.7020 },
+                            Round2: { Open: 73.1122, SC: 60.5031, ST: 67.6870, OBC: 44.8930, Ladies: 74.5088, TFWS: 69.814, EWS: 49.5131 },
+                            Round3: { Open: 73.1122, SC: 60.5031, ST: 67.6870, OBC: 44.89295, Ladies: 60.6237, TFWS: 66.851, EWS: null }
+                        }
+                    },
+                    ECS: {
+                        name: "Electronics & Computer Science",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 86.9353, SC: 80.2358, ST: null, OBC: 86.0864, Ladies: 85.7790, TFWS: 84.6402, EWS: 57.0471 },
+                            Round2: { Open: 86.1433, SC: 80.2358, ST: 85.5760, OBC: 81.9801, Ladies: 85.4384, TFWS: 86.970, EWS: 52.5185 },
+                            Round3: { Open: 86.1433, SC: 80.2358, ST: 85.5760, OBC: 81.98015, Ladies: 85.4384, TFWS: 86.970, EWS: 46.3657898 }
+                        }
+                    },
+                    CSE_AIML: {
+                        name: "Computer Science & Engineering (AI & ML)",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 91.5585, SC: 60.5467, ST: 84.7973, OBC: 87.4969, Ladies: 89.8756, TFWS: 91.9393, EWS: 75.6213 },
+                            Round2: { Open: 89.3223, SC: 82.7090, ST: 60.5467, OBC: 86.0864, Ladies: 88.5552, TFWS: 91.939, EWS: 75.6213 },
+                            Round3: { Open: 89.3223, SC: 82.70902, ST: 60.5467, OBC: 86.08637, Ladies: 88.5552, TFWS: 90.349, EWS: 74.3614357 }
+                        }
+                    }
+                }
+            },
+            {
+                name: "Rizvi College of Engineering, Bandra",
+                linguisticMinority: "MUSLIM",
+                branches: {
+                    COMPUTERS: {
+                        name: "Computer Engineering",
+                        seats: 120,
+                        CET: {
+                            Round1: { Open: 92.335, Ladies: 92.0214, TFWS: 94.233, MI: 83.5380 },
+                            Round2: { Open: 90.8059, Ladies: 91.1269, TFWS: 92.9712, MI: 82.2449 },
+                            Round3: { Open: 90.0183, Ladies: 88.1228, TFWS: 92.97116, MI: 82.2449 }
+                        }
+                    },
+                    MECHANICAL: {
+                        name: "Mechanical Engineering",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 77.5960, Ladies: 56.9588, TFWS: null, MI: 0.9508 },
+                            Round2: { Open: 66.4751, Ladies: 56.9588, TFWS: null, MI: 0.9508 },
+                            Round3: { Open: 66.4751, Ladies: 56.9588, TFWS: null, MI: 0.9508114 }
+                        }
+                    },
+                    CIVIL: {
+                        name: "Civil Engineering",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 77.8207, Ladies: 53.5178, TFWS: null, MI: 27.4155 },
+                            Round2: { Open: 61.3262, Ladies: 54.0860, TFWS: null, MI: 7.7070 },
+                            Round3: { Open: 60.1504, Ladies: 42.8773, TFWS: null, MI: 7.7070 }
+                        }
+                    },
+                    ECS: {
+                        name: "Electronics & Computer Science",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 87.1565, Ladies: 87.2953, TFWS: 87.1013, MI: 69.6279 },
+                            Round2: { Open: 86.8967, Ladies: 87.2953, TFWS: 87.101, MI: 69.6279 },
+                            Round3: { Open: 87.1013, Ladies: 86.9702, TFWS: 87.101, MI: 69.627936 }
+                        }
+                    },
+                    AIDS: {
+                        name: "Artificial Intelligence & Data Science",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 91.7850, Ladies: 90.8293, TFWS: 92.2551, MI: 79.9360 },
+                            Round2: { Open: 89.9514, Ladies: 89.0376, TFWS: 90.957, MI: 79.9360 },
+                            Round3: { Open: 89.0376, Ladies: 88.5552, TFWS: 90.863, MI: 79.936001 }
+                        }
+                    }
+                }
+            },
+            {
+                name: "A.P. Shah Institute of Technology, Thane",
+                linguisticMinority: "JAIN",
+                branches: {
+                    COMPUTERS: {
+                        name: "Computer Engineering",
+                        seats: 180,
+                        CET: {
+                            Round1: { Open: 91.635, Ladies: 91.7850, TFWS: 93.456, MI: 2.7562 },
+                            Round2: { Open: 90.7980, Ladies: 91.3239, TFWS: 93.4558, MI: 2.7562 },
+                            Round3: { Open: 90.863, Ladies: 91.4391, TFWS: 93.456, MI: 2.7562 }
+                        }
+                    },
+                    IT: {
+                        name: "Information Technology",
+                        seats: 180,
+                        CET: {
+                            Round1: { Open: 89.4520, Ladies: 90.0772, TFWS: 90.9924, MI: 14.3617 },
+                            Round2: { Open: 88.1886, Ladies: 87.5599, TFWS: 90.7774, MI: 31.3199 },
+                            Round3: { Open: 88.18865, Ladies: 87.5599, TFWS: 90.4797, MI: 31.3199 }
+                        }
+                    },
+                    CIVIL: {
+                        name: "Civil Engineering",
+                        seats: 30,
+                        CET: {
+                            Round1: { Open: 79.3459, Ladies: 49.6194, TFWS: null, MI: 72.3243 },
+                            Round2: { Open: 79.3459, Ladies: 57.1543, TFWS: null, MI: 72.3243 },
+                            Round3: { Open: 77.8207, Ladies: 57.1543, TFWS: null, MI: 72.3243 }
+                        }
+                    },
+                    MECHANICAL: {
+                        name: "Mechanical Engineering",
+                        seats: 30,
+                        CET: {
+                            Round1: { Open: 80.5929, Ladies: 69.2755, TFWS: 82.1767, MI: 22.2282 },
+                            Round2: { Open: 69.7604, Ladies: 69.2755, TFWS: 82.177, MI: 57.4143 },
+                            Round3: { Open: 69.7604, Ladies: 69.2755, TFWS: 82.177, MI: 57.414259 }
+                        }
+                    },
+                    CSE_AIML: {
+                        name: "Computer Science & Engineering (AI & ML)",
+                        seats: 180,
+                        CET: {
+                            Round1: { Open: 88.2041, Ladies: 88.5014, TFWS: 91.4912, MI: 0.9801 },
+                            Round2: { Open: 87.5123, Ladies: 86.5260, TFWS: 90.480, MI: 16.3514 },
+                            Round3: { Open: 87.5123, Ladies: 86.5260, TFWS: 89.479, MI: 16.35137 }
+                        }
+                    },
+                    CSE_DATA_SCIENCE: {
+                        name: "Computer Science & Engineering (Data Science)",
+                        seats: 120,
+                        CET: {
+                            Round1: { Open: 74.9709, Ladies: 71.3531, TFWS: 90.7774, MI: 50.6341 },
+                            Round2: { Open: 75.0114, Ladies: 71.3531, TFWS: 90.019, MI: 32.0977 },
+                            Round3: { Open: 84.6087, Ladies: 87.6007, TFWS: 89.491, MI: 32.097739 }
+                        }
+                    }
+                }
+            },
+            {
+                name: "Saboo Siddik, Byculla",
+                linguisticMinority: "MUSLIM",
+                branches: {
+                    COMPUTERS: {
+                        name: "Computer Engineering",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 89.322, Ladies: 88.6963, TFWS: 94.895, MI: 85.8773 },
+                            Round2: { Open: 88.5539, Ladies: 88.3568, TFWS: 92.5368, MI: 83.8466 },
+                            Round3: { Open: 88.5539, Ladies: 91.2733, TFWS: 92.5368, MI: 83.8466 }
+                        }
+                    },
+                    IT: {
+                        name: "Information Technology",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 86.8891, Ladies: 86.8030, TFWS: 92.2260, MI: 80.4299 },
+                            Round2: { Open: 85.2662, Ladies: 85.8632, TFWS: 90.2676, MI: 78.1497 },
+                            Round3: { Open: 85.2662, Ladies: 84.2431, TFWS: 90.2676, MI: 78.1497 }
+                        }
+                    },
+                    CIVIL: {
+                        name: "Civil Engineering",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 49.5131, Ladies: 33.1000, TFWS: null, MI: 4.2265 },
+                            Round2: { Open: 20.7289, Ladies: 10.4466, TFWS: null, MI: 11.7746 },
+                            Round3: { Open: 15.2018, Ladies: 1.0664, TFWS: null, MI: 11.8 }
+                        }
+                    },
+                    EXTC: {
+                        name: "Electronics & Telecommunication Engineering",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 82.7087, Ladies: 71.1377, TFWS: 80.0034, MI: 58.1159 },
+                            Round2: { Open: 75.7360, Ladies: 73.8487, TFWS: 80.003, MI: 60.1292 },
+                            Round3: { Open: 75.7360, Ladies: 73.8487, TFWS: 80.003, MI: 60.1292 }
+                        }
+                    },
+                    MECHANICAL: {
+                        name: "Mechanical Engineering",
+                        seats: 30,
+                        CET: {
+                            Round1: { Open: 73.4250, Ladies: 53.7695, TFWS: null, MI: 41.3261 },
+                            Round2: { Open: 57.2538, Ladies: 67.2945, TFWS: null, MI: 35.6703 },
+                            Round3: { Open: 57.2538, Ladies: 43.5299, TFWS: null, MI: 35.6703 }
+                        }
+                    },
+                    AUTOMOBILE: {
+                        name: "Automobile Engineering",
+                        seats: 30,
+                        CET: {
+                            Round1: { Open: 55.1151, Ladies: 32.8344, TFWS: 69.0660, MI: 1.5169 },
+                            Round2: { Open: 34.8002, Ladies: 32.8344, TFWS: 69.066, MI: 1.5169 },
+                            Round3: { Open: 34.8002, Ladies: 32.8344, TFWS: 69.066, MI: 1.5169 }
+                        }
+                    },
+                    CSE_AIML: {
+                        name: "Computer Science & Engineering (AI & ML)",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 87.3712, Ladies: 85.8773, TFWS: 88.8902, MI: 80.0034 },
+                            Round2: { Open: 85.9343, Ladies: 82.1879, TFWS: 88.890, MI: 79.5236 },
+                            Round3: { Open: 85.9343, Ladies: 82.1879, TFWS: 88.890, MI: 79.5236 }
+                        }
+                    },
+                    CSE_IOT: {
+                        name: "Computer Science & Engineering (IOT & Cyber Security)",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 85.0744, Ladies: 86.1227, TFWS: 88.3568, MI: 76.1359 },
+                            Round2: { Open: 82.1494, Ladies: 81.2929, TFWS: 88.357, MI: 75.6213 },
+                            Round3: { Open: 82.8861, Ladies: 81.4025, TFWS: 88.357, MI: 75.6213 }
+                        }
+                    }
+                }
+            },
+            {
+                name: "L.R. Tiwari, Mira Road",
+                 linguisticMinority: "NON_MINORITY",
+                branches: {
+                    CIVIL: {
+                        name: "Civil Engineering",
+                        seats: 30,
+                        CET: {
+                            Round1: { Open: 68.1767, Ladies: 23.9858, TFWS: null, MI: 26.1271 },
+                            Round2: { Open: 29.3072, Ladies: 69.7604, TFWS: null, MI: null },
+                            Round3: { Open: 25.514, Ladies: 30.4575, TFWS: null, MI: 58.1159 }
+                        }
+                    },
+                    COMPUTER: {
+                        name: "Computer Engineering",
+                        seats: 180,
+                        CET: {
+                            Round1: { Open: 88.6037, Ladies: 87.5599, TFWS: 91.9493, MI: 83.0327 },
+                            Round2: { Open: 87.5599, Ladies: 85.7790, TFWS: 91.3662, MI: 82.6959 },
+                            Round3: { Open: 87.5599, Ladies: 85.7790, TFWS: 91.1269, MI: 82.6959 }
+                        }
+                    },
+                    IT: {
+                        name: "Information Technology",
+                        seats: 180,
+                        CET: {
+                            Round1: { Open: 87.1013, Ladies: 85.7790, TFWS: 89.4520, MI: 77.7635 },
+                            Round2: { Open: 85.1704, Ladies: 84.3370, TFWS: 89.452, MI: 76.5963 },
+                            Round3: { Open: 85.2126, Ladies: 84.5242, TFWS: 89.4520, MI: 76.5963 }
+                        }
+                    },
+                    EXTC: {
+                        name: "Electronics & Telecommunication Engineering",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 80.5929, Ladies: 81.7658, TFWS: 83.5073, MI: 60.5467 },
+                            Round2: { Open: 77.8466, Ladies: 80.0921, TFWS: 83.507, MI: 60.5467 },
+                            Round3: { Open: 77.8466, Ladies: 80.0921, TFWS: 83.5013, MI: 61.6355 }
+                        }
+                    },
+                    MECHANICAL: {
+                        name: "Mechanical Engineering",
+                        seats: 30,
+                        CET: {
+                            Round1: { Open: 74.3786, Ladies: 43.5299, TFWS: null, MI: null },
+                            Round2: { Open: 57.1960, Ladies: 48.8697, TFWS: null, MI: 0.2560 },
+                            Round3: { Open: 57.1960, Ladies: 48.8697, TFWS: null, MI: 0.2560 }
+                        }
+                    },
+                    ECS: {
+                        name: "Electronics & Computer Science",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 83.1470, Ladies: 85.0982, TFWS: 85.4384, MI: 70.2544 },
+                            Round2: { Open: 82.1879, Ladies: 82.2449, TFWS: 85.438, MI: 69.7604 },
+                            Round3: { Open: 83.0327, Ladies: 82.2449, TFWS: 84.511, MI: 69.7604 }
+                        }
+                    }
+                }
+            },
+            {
+                name: "K C College, Thane",
+                 linguisticMinority: "SINDHI",
+                branches: {
+                    COMPUTERS: {
+                        name: "Computer Engineering",
+                        seats: 180,
+                        CET: {
+                            Round1: { Open: 87.101, Ladies: 88.1926, TFWS: 89.284, MI: 42.2201 },
+                            Round2: { Open: 85.9711, Ladies: 87.0845, TFWS: 89.2835, MI: 42.2201 },
+                            Round3: { Open: 85.9711, Ladies: 87.0845, TFWS: 89.2835, MI: 42.2201 }
+                        }
+                    },
+                    IT: {
+                        name: "Information Technology",
+                        seats: 180,
+                        CET: {
+                            Round1: { Open: 85.4542, Ladies: 85.5052, TFWS: 86.5260, MI: null },
+                            Round2: { Open: 81.2929, Ladies: 81.2929, TFWS: 86.0756, MI: null },
+                            Round3: { Open: 81.2929, Ladies: 81.2929, TFWS: 86.5260, MI: null }
+                        }
+                    },
+                    EXTC: {
+                        name: "Electronics & Telecommunication Engineering",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 79.9360, Ladies: 81.2929, TFWS: 82.7779, MI: null },
+                            Round2: { Open: 75.8855, Ladies: 79.4055, TFWS: 82.886, MI: null },
+                            Round3: { Open: 75.8855, Ladies: 79.4055, TFWS: 82.886, MI: null }
+                        }
+                    }
+                }
+            },
+            {
+                name: "Shivajirao S. Jondhale College of Engineering, Dombivali",
+                 linguisticMinority: "NON_MINORITY",
+                branches: {
+                    COMPUTERS: {
+                        name: "Computer Engineering",
+                        seats: 90,
+                        CET: {
+                            Round1: { Open: 86.574, SC: 81.7888, ST: 57.3311, OBC: 83.7441, Ladies: 86.6548, TFWS: 88.021, EWS: 50.6004 },
+                            Round2: { Open: 81.9801, SC: 76.5963, ST: 81.4942, OBC: 79.5236, Ladies: 83.1984, TFWS: 87.8152, EWS: 24.7658 },
+                            Round3: { Open: 81.9801, SC: 76.7300, ST: 81.6588, OBC: 79.5236, Ladies: 83.6394, TFWS: 87.8152, EWS: 24.7658 }
+                        }
+                    },
+                    IT: {
+                        name: "Information Technology",
+                        seats: 40,
+                        CET: {
+                            Round1: { Open: 84.5242, SC: 81.4942, ST: null, OBC: 82.5540, Ladies: 85.3822, TFWS: 86.0864, EWS: 45.4575 },
+                            Round2: { Open: 81.2929, SC: 75.8855, ST: 50.0353, OBC: 78.2153, Ladies: 82.2449, TFWS: 86.0864, EWS: 21.3859 },
+                            Round3: { Open: 99.9194, SC: 98.7464, ST: 95.5118, OBC: 99.7718, Ladies: 99.8432, TFWS: 99.8432, EWS: 99.7240 }
+                        }
+                    },
+                    EXTC: {
+                        name: "Electronics & Telecommunication Engineering",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 77.6411, SC: 60.5967, ST: null, OBC: 69.0660, Ladies: 76.1269, TFWS: 78.4441, EWS: 11.0477 },
+                            Round2: { Open: 71.4038, SC: 60.5967, ST: 79.5236, OBC: 68.4786, Ladies: 71.5966, TFWS: 77.847, EWS: 11.0477 },
+                            Round3: { Open: 99.6870, SC: 97.6203, ST: 92.1948, OBC: 100, Ladies: 99.6352, TFWS: 99.680, EWS: 99.3 }
+                        }
+                    },
+                    CHEMICAL: {
+                        name: "Chemical Engineering",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 69.4684, SC: 47.4577, ST: null, OBC: 55.0734, Ladies: 66.1855, TFWS: null, EWS: null },
+                            Round2: { Open: 60.1292, SC: 47.4577, ST: 51.2783, OBC: 45.5785, Ladies: 65.4406, TFWS: null, EWS: null },
+                            Round3: { Open: 60.5031, SC: 47.4577, ST: 51.2783, OBC: 45.5785, Ladies: 65.4406, TFWS: null, EWS: null }
+                        }
+                    },
+                    MECHANICAL: {
+                        name: "Mechanical Engineering",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 60.6237, SC: 36.6611, ST: null, OBC: 32.1785, Ladies: 4.0662, TFWS: null, EWS: null },
+                            Round2: { Open: 42.8773, SC: 36.6611, ST: 14.1948, OBC: 13.0427, Ladies: 4.0662, TFWS: null, EWS: null },
+                            Round3: { Open: 42.8773, SC: 36.6611, ST: 14.1948, OBC: 13.0427, Ladies: 4.0662, TFWS: null, EWS: null }
+                        }
+                    },
+                    AIML: {
+                        name: "Artificial Intelligence & Machine Learning",
+                        seats: 30,
+                        CET: {
+                            Round1: { Open: 85.3822, SC: 77.8445, ST: 11.3878, OBC: 83.5073, Ladies: 84.5115, TFWS: 83.0327, EWS: 56.9588 },
+                            Round2: { Open: 82.4586, SC: 76.7998, ST: 80.5897, OBC: 78.4508, Ladies: 82.7099, TFWS: 83.033, EWS: 21.4924 },
+                            Round3: { Open: 82.7779, SC: 78.1946, ST: 80.5897, OBC: 78.4508, Ladies: 82.7099, TFWS: 83.507, EWS: 68.9 }
+                        }
+                    }
+                }
+            },
+            {
+                name: "Pravin Patil, Bhayander",
+                 linguisticMinority: "NON_MINORITY",
+                branches: {
+                    COMPUTERS: {
+                        name: "Computer Engineering",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 83.847, SC: 68.4786, ST: null, OBC: 80.5359, Ladies: 85.9343, TFWS: 38.777, EWS: 38.7774 },
+                            Round2: { Open: 81.3895, SC: 65.5509, ST: 81.3895, OBC: 80.5359, Ladies: 85.9343, TFWS: 88.1140, EWS: 6.8904 },
+                            Round3: { Open: 81.3895, SC: 65.5509, ST: 81.3895, OBC: 80.5359, Ladies: 85.9343, TFWS: 88.1140, EWS: 38.7774 }
+                        }
+                    },
+                    IT: {
+                        name: "Information Technology",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 80.7841, SC: 75.8855, ST: null, OBC: 78.1946, Ladies: 81.3895, TFWS: 86.8967, EWS: 7.3207 },
+                            Round2: { Open: 77.8251, SC: 64.9513, ST: 76.0338, OBC: 76.4789, Ladies: 76.7776, TFWS: 86.8967, EWS: 7.3207 },
+                            Round3: { Open: 77.8251, SC: 64.9513, ST: 76.0338, OBC: 76.4789, Ladies: 76.7776, TFWS: 86.8967, EWS: 7.3207 }
+                        }
+                    },
+                    ELECTRICAL: {
+                        name: "Electrical Engineering",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 47.9077, SC: null, ST: null, OBC: 27.1291, Ladies: 13.2388, TFWS: null, EWS: null },
+                            Round2: { Open: 19.4066, SC: null, ST: null, OBC: 27.1291, Ladies: 28.8691, TFWS: null, EWS: null },
+                            Round3: { Open: 19.4066, SC: 29.1561, ST: 27.6623, OBC: 22.5662, Ladies: 28.8691, TFWS: null, EWS: null }
+                        }
+                    },
+                    MECHANICAL_AUTOMATION: {
+                        name: "Mechanical & Automation Engineering",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 32.2475, SC: null, ST: null, OBC: 16.6009, Ladies: 16.8883, TFWS: null, EWS: null },
+                            Round2: { Open: 32.2475, SC: null, ST: null, OBC: 20.9331, Ladies: 16.8883, TFWS: null, EWS: null },
+                            Round3: { Open: 23.9858, SC: null, ST: null, OBC: 16.6009, Ladies: 16.8883, TFWS: null, EWS: null }
+                        }
+                    },
+                    CIVIL: {
+                        name: "Civil Engineering",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 26.1271, SC: null, ST: null, OBC: null, Ladies: 22.0579, TFWS: null, EWS: null },
+                            Round2: { Open: 26.1271, SC: null, ST: null, OBC: null, Ladies: 22.0579, TFWS: null, EWS: null },
+                            Round3: { Open: 26.1271, SC: null, ST: null, OBC: null, Ladies: 22.0579, TFWS: null, EWS: null }
+                        }
+                    },
+                    ELECTRONICS_BIOMEDICAL: {
+                        name: "Electronics & Biomedical Engineering",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 43.9566, SC: null, ST: null, OBC: 2.9771, Ladies: 60.1292, TFWS: null, EWS: null },
+                            Round2: { Open: 2.9771, SC: null, ST: null, OBC: 32.8344, Ladies: 13.6621, TFWS: null, EWS: null },
+                            Round3: { Open: 2.9771, SC: null, ST: null, OBC: 4.7767, Ladies: 21.4728, TFWS: null, EWS: null }
+                        }
+                    }
+                }
+            },
+            {
+                name: "St. John, Palghar",
+                linguisticMinority: "CHRISTIAN",
+                branches: {
+                    CIVIL: {
+                        name: "Civil Engineering",
+                        seats: 30,
+                        CET: {
+                            Round1: { Open: 48.614, Ladies: 24.3095, TFWS: null, MI: null },
+                            Round2: { Open: 38.8660, Ladies: 28.0884, TFWS: null, MI: null },
+                            Round3: { Open: 28.0884, Ladies: 38.8660, TFWS: null, MI: null }
+                        }
+                    },
+                    COMPUTER: {
+                        name: "Computer Engineering",
+                        seats: 120,
+                        CET: {
+                            Round1: { Open: 83.0327, Ladies: 83.7530, TFWS: 89.0376, MI: 2.0203 },
+                            Round2: { Open: 81.1614, Ladies: 81.6588, TFWS: 89.0376, MI: 6.0443 },
+                            Round3: { Open: 81.1614, Ladies: 81.6588, TFWS: 89.0376, MI: 6.0443 }
+                        }
+                    },
+                    IT: {
+                        name: "Information Technology",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 81.8420, Ladies: 82.4586, TFWS: 86.2658, MI: 6.8368 },
+                            Round2: { Open: 79.3459, Ladies: 80.5897, TFWS: 84.026, MI: 10.2692 },
+                            Round3: { Open: 79.3459, Ladies: 79.5290, TFWS: 84.026, MI: 10.2692 }
+                        }
+                    },
+                    MECHANICAL: {
+                        name: "Mechanical Engineering",
+                        seats: 30,
+                        CET: {
+                            Round1: { Open: 63.2688, Ladies: 38.8660, TFWS: null, MI: null },
+                            Round2: { Open: 41.3261, Ladies: 57.9919, TFWS: null, MI: 28.0884 },
+                            Round3: { Open: 57.9919, Ladies: 27.1533, TFWS: null, MI: null }
+                        }
+                    },
+                    ECS: {
+                        name: "Electronics & Computer Science",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 68.2902, Ladies: 71.3989, TFWS: 74.6831, MI: null },
+                            Round2: { Open: 63.2340, Ladies: 63.5258, TFWS: 70.254, MI: 51.2783 },
+                            Round3: { Open: 63.2340, Ladies: 63.5258, TFWS: 70.254, MI: 51.2783 }
+                        }
+                    },
+                    CSE_DATA_SCIENCE: {
+                        name: "Computer Science & Engineering (Data Science)",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 80.2358, Ladies: 80.5897, TFWS: 86.8553, MI: 10.4466 },
+                            Round2: { Open: 80.7414, Ladies: 73.1122, TFWS: 86.855, MI: 10.4466 },
+                            Round3: { Open: 76.4789, Ladies: 73.1122, TFWS: 86.855, MI: 10.4466 }
+                        }
+                    },
+                    AIML: {
+                        name: "Artificial Intelligence & Machine Learning",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 81.2929, Ladies: 80.2358, TFWS: 83.5380, MI: null },
+                            Round2: { Open: 73.3652, Ladies: 76.6200, TFWS: 88.158, MI: 11.4858 },
+                            Round3: { Open: 73.3652, Ladies: 77.2075, TFWS: 88.158, MI: 63.5370 }
+                        }
+                    }
+                }
+            },
+            // {
+            //     name: "Universal,Vasa",
+            //     branches: {
+            //         COMPUTERS: { CET: { Open: 59135, JEE_M: 33910 }, JEE: { Open: 14257, JEE_M: 36750 } },
+            //         IT: { CET: { Open: null, JEE_M: null }, JEE: { Open: 107424, JEE_M: 52170 } },
+            //         AIDS: { CET: { Open: null, JEE_M: null }, JEE: { Open: 57.8898, JEE_M: 53.0226 } },
+            //         AIML: { CET: { Open: 39388, JEE_M: 20594 }, JEE: { Open: null, JEE_M: null } },
+            //         EXTC: { CET: { Open: 86.5743, JEE_M: 80.0165 }, JEE: { Open: 61372, JEE_M: 34168 } },
+            //         ECS: { CET: { Open: 78.4501, JEE_M: 68.2213 }, JEE: { Open: null, JEE_M: null } },
+            //         MECH: { CET: { Open: null, JEE_M: null }, JEE: { Open: 125344, JEE_M: 64262 } }
+            //     }
+            // },
+            {
+                name: "Theem College of Engineering, Boisar",
+                linguisticMinority: "MUSLIM",
+                branches: {
+                    COMPUTERS: {
+                        name: "Computer Engineering",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 76.363, Ladies: 75.3410, TFWS: 83.033, MI: 46.5103 },
+                            Round2: { Open: 71.3531, Ladies: 65.2878, TFWS: 83.0327, MI: 7.8242 },
+                            Round3: { Open: 69.8004, Ladies: 65.2878, TFWS: 79.6527, MI: 6.2399 }
+                        }
+                    },
+                    IT: {
+                        name: "Information Technology",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 71.5966, Ladies: 67.0458, TFWS: 74.6831, MI: 1.9948 },
+                            Round2: { Open: 57.8688, Ladies: 57.1960, TFWS: 74.6831, MI: 9.9568 },
+                            Round3: { Open: 57.8688, Ladies: 57.1960, TFWS: 74.6831, MI: 9.9568 }
+                        }
+                    },
+                    CIVIL: {
+                        name: "Civil Engineering",
+                        seats: 30,
+                        CET: {
+                            Round1: { Open: 1.2124, Ladies: null, TFWS: null, MI: null },
+                            Round2: { Open: 1.2124, Ladies: null, TFWS: null, MI: null },
+                            Round3: { Open: 1.2124, Ladies: 18.1288, TFWS: null, MI: null }
+                        }
+                    },
+                    ELECTRICAL: {
+                        name: "Electrical Engineering",
+                        seats: 30,
+                        CET: {
+                            Round1: { Open: 36.2134, Ladies: 37.2130, TFWS: null, MI: 28.3301 },
+                            Round2: { Open: 31.3199, Ladies: 20.7289, TFWS: null, MI: null },
+                            Round3: { Open: 31.3199, Ladies: 20.7289, TFWS: null, MI: null }
+                        }
+                    },
+                    AUTOMOBILE: {
+                        name: "Automobile Engineering",
+                        seats: 30,
+                        CET: {
+                            Round1: { Open: 37.2130, Ladies: 14.0490, TFWS: null, MI: null },
+                            Round2: { Open: 22.4082, Ladies: 24.0054, TFWS: null, MI: null },
+                            Round3: { Open: 22.4082, Ladies: 24.0054, TFWS: null, MI: null }
+                        }
+                    },
+                    MECHANICAL: {
+                        name: "Mechanical Engineering",
+                        seats: 30,
+                        CET: {
+                            Round1: { Open: 9.8530, Ladies: 36.9291, TFWS: null, MI: 67.5881 },
+                            Round2: { Open: 9.6244, Ladies: 9.4600, TFWS: null, MI: 21.4728 },
+                            Round3: { Open: 39.7482, Ladies: 9.4600, TFWS: null, MI: 21.4728 }
+                        }
+                    },
+                    CSE_AIML: {
+                        name: "Computer Science & Engineering (AI & ML)",
+                        seats: 120,
+                        CET: {
+                            Round1: { Open: 61.3262, Ladies: 55.1151, TFWS: 70.8894, MI: 0.3800 },
+                            Round2: { Open: 52.8149, Ladies: 42.2207, TFWS: 71.712, MI: 0.3800 },
+                            Round3: { Open: 52.8149, Ladies: 42.2207, TFWS: 71.712, MI: 0.3800 }
+                        }
+                    }
+                }
+            },
+            {
+                name: "Lokmanya Tilak College of Engineering, Kopar Khairane",
+                linguisticMinority: "HINDI",
+                branches: {
+                    COMPUTERS: {
+                        seats: 120,
+                        CET: {
+                            Round1: { Open: 91.439, Ladies: 91.3560, TFWS: 94.233, MI: 85.0744 },
+                            Round2: { Open: 90.0772, Ladies: 90.9570, TFWS: 94.2334, MI: 85.0744 },
+                            Round3: { Open: 90.0772, Ladies: 90.9570, TFWS: 94.23335, MI: 85.0744 }
+                        }
+                    },
+                    ELECTRICAL: {
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 72.1468, Ladies: 67.2945, TFWS: 85.0982, MI: 14.7378 },
+                            Round2: { Open: 66.8505, Ladies: 57.1960, TFWS: 82.4586, MI: 6.3954 },
+                            Round3: { Open: 66.85053, Ladies: 57.1960, TFWS: 76.4789, MI: 14.7378 }
+                        }
+                    },
+                    EXTC: {
+                        name: "Electronics & Telecommunication",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 82.7099, Ladies: 82.8590, TFWS: 83.5369, MI: 63.0760 },
+                            Round2: { Open: 78.4508, Ladies: 79.1319, TFWS: 83.537, MI: 63.0760 },
+                            Round3: { Open: 78.4508, Ladies: 79.1319, TFWS: 83.470, MI: 63.07596 }
+                        }
+                    },
+                    MECHANICAL: {
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 69.6279, Ladies: 30.4575, TFWS: null, MI: 1.5491 },
+                            Round2: { Open: 57.2163, Ladies: 30.4575, TFWS: null, MI: 1.5491 },
+                            Round3: { Open: 57.2163, Ladies: 30.4575, TFWS: null, MI: 1.5490684 }
+                        }
+                    },
+                    CSE_AIML: {
+                        name: "Computer Science Engineering (AI & ML)",
+                        seats: 120,
+                        CET: {
+                            Round1: { Open: 87.1565, Ladies: 87.5123, TFWS: 90.8910, MI: 76.7300 },
+                            Round2: { Open: 86.5744, Ladies: 87.5123, TFWS: 90.891, MI: 76.7300 },
+                            Round3: { Open: 86.5744, Ladies: 87.5123, TFWS: 90.891, MI: 76.730026 }
+                        }
+                    },
+                    CSE_DATA_SCIENCE: {
+                        name: "Computer Science Engineering (Data Science)",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 88.6037, Ladies: 89.2671, TFWS: 93.1559, MI: 76.1269 },
+                            Round2: { Open: 87.2785, Ladies: 88.6963, TFWS: 93.156, MI: 76.1269 },
+                            Round3: { Open: 87.2785, Ladies: 88.6963, TFWS: 93.156, MI: 76.126878 }
+                        }
+                    },
+                    CSE_IOT: {
+                        name: "Computer Science Engineering (IoT & Cyber Security)",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 86.8242, Ladies: 88.0210, TFWS: 90.3485, MI: 73.4250 },
+                            Round2: { Open: 86.5602, Ladies: 88.0210, TFWS: 88.781, MI: 73.4250 },
+                            Round3: { Open: 86.5602, Ladies: 88.0210, TFWS: 88.781, MI: 73.4250 }
+                        }
+                    }
+                }
+            },
+            {
+                name: "Indira Gandhi College of Engineering, Kopar Khairane",
+                linguisticMinority: "NON_MINORITY",
+                branches: {
+                    COMPUTERS: {
+                        seats: 120,
+                        CET: {
+                            Round1: { Open: 90.349, SC: 85.0982, ST: 33.1000, OBC: 88.8902, Ladies: 90.5913, TFWS: 91.795, EWS: 74.3786 },
+                            Round2: { Open: 88.7795, SC: 81.4025, ST: 88.7795, OBC: 85.5760, Ladies: 88.9751, TFWS: 91.7947, EWS: 75.3410 },
+                            Round3: { Open: 88.6325, SC: 81.70983, ST: 87.55985, OBC: 85.5760, Ladies: 88.7813, TFWS: 91.79468, EWS: 65.3627 }
+                        }
+                    },
+                    ELECTRICAL: {
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 67.6870, SC: 54.3920, ST: null, OBC: 65.7227, Ladies: 60.1292, TFWS: 69.2755, EWS: 29.1561 },
+                            Round2: { Open: 63.0702, SC: 54.3920, ST: 60.5967, OBC: 56.0104, Ladies: 60.1292, TFWS: 69.2755, EWS: null },
+                            Round3: { Open: 63.23401, SC: 54.3920, ST: 79.82404, OBC: 56.0104, Ladies: 60.1292, TFWS: 69.2755, EWS: null }
+                        }
+                    },
+                    MECHANICAL: {
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 66.4751, SC: 19.4066, ST: null, OBC: 56.9588, Ladies: 0.1183, TFWS: null, EWS: null },
+                            Round2: { Open: 47.9077, SC: 19.4066, ST: 43.8453, OBC: 21.3531, Ladies: 21.3859, TFWS: null, EWS: null },
+                            Round3: { Open: 47.9077, SC: 19.40658, ST: 43.8453, OBC: 21.35311, Ladies: 21.3859, TFWS: null, EWS: null }
+                        }
+                    },
+                    CSE_AIML: {
+                        name: "Computer Science Engineering (AI & ML)",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 87.2785, SC: 80.7859, ST: null, OBC: 85.3422, Ladies: 87.2785, TFWS: 90.7980, EWS: 62.9030 },
+                            Round2: { Open: 86.0756, SC: 80.7859, ST: 85.8773, OBC: 82.7820, Ladies: 86.1765, TFWS: 89.482, EWS: 61.8909 },
+                            Round3: { Open: 86.0756, SC: 80.78589, ST: 60.8486, OBC: 82.78203, Ladies: 85.8773, TFWS: 89.482, EWS: 40.1585977 }
+                        }
+                    },
+                    CSE_IOT: {
+                        name: "Computer Science Engineering (IoT & Cyber Security)",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 86.0756, SC: 79.8240, ST: null, OBC: 81.7888, Ladies: 84.5731, TFWS: 86.8244, EWS: 31.6234 },
+                            Round2: { Open: 82.7090, SC: 79.8240, ST: 82.2449, OBC: 80.5897, Ladies: 82.9979, TFWS: 88.114, EWS: 14.7378 },
+                            Round3: { Open: 82.7776, SC: 79.82404, ST: 20.9411, OBC: 81.65883, Ladies: 83.6467, TFWS: 88.114, EWS: 32.8923205 }
+                        }
+                    },
+                    AIDS: {
+                        name: "Artificial Intelligence & Data Science",
+                        seats: 60,
+                        CET: {
+                            Round1: { Open: 88.3568, SC: 82.7090, ST: 74.1163, OBC: 86.1765, Ladies: 87.4464, TFWS: 92.4262, EWS: 63.5258 },
+                            Round2: { Open: 87.1299, SC: 79.8240, ST: 86.2308, OBC: 84.3370, Ladies: 85.7790, TFWS: 90.798, EWS: 60.6237 },
+                            Round3: { Open: 86.2308, SC: 79.82404, ST: 86.1970, OBC: 84.33696, Ladies: 85.5052, TFWS: 88.700, EWS: 25.7846411 }
+                        }
+                    }
+                }
+            },
+        ];
+
+        // document.getElementById('predictorForm').addEventListener('submit', function (e) {
+        //     e.preventDefault();
+
+        //     // Show loading
+        //     document.getElementById('loading').style.display = 'block';
+        //     document.getElementById('results').innerHTML = '';
+
+        //     const studentName = document.getElementById('studentName').value;
+        //     const examType = document.getElementById('examType').value;
+        //     const branch = document.getElementById('branch').value;
+        //     const percentile = parseFloat(document.getElementById('percentile').value);
+        //     const rank = parseInt(document.getElementById('rank').value);
+
+        //     // Simulate loading delay
+        //     setTimeout(() => {
+        //         const eligibleColleges = findEligibleColleges(examType, branch, percentile, rank);
+        //         displayResults(studentName, eligibleColleges, examType, branch, percentile, rank);
+        //         document.getElementById('loading').style.display = 'none';
+        //     }, 1500);
+        // });
+
+        // function findEligibleColleges(examType, branch, percentile, rank) {
+        //     const eligible = [];
+        //     const rankRange = 5000;
+
+        //     collegeData.forEach(college => {
+        //         if (college.branches[branch]) {
+        //             const branchData = college.branches[branch][examType];
+
+        //             if (branchData) {
+        //                 // ✅ CET case — show only CET (Open) cutoffs
+        //                 if (examType === 'CET' && typeof branchData.Open === 'number' && rank <= (branchData.Open + rankRange)) {
+        //                     eligible.push({
+        //                         name: college.name,
+        //                         category: 'CET - Open',
+        //                         cutoffRank: branchData.Open,
+        //                         yourRank: rank,
+        //                         difference: branchData.Open - rank
+        //                     });
+        //                 }
+
+        //                 // ✅ JEE case — show only JEE (JEE_M) cutoffs
+        //                 if (examType === 'JEE' && typeof branchData.JEE_M === 'number' && rank <= (branchData.JEE_M + rankRange)) {
+        //                     eligible.push({
+        //                         name: college.name,
+        //                         category: 'JEE - General',
+        //                         cutoffRank: branchData.JEE_M,
+        //                         yourRank: rank,
+        //                         difference: branchData.JEE_M - rank
+        //                     });
+        //                 }
+        //             }
+        //         }
+        //     });
+
+        //     eligible.sort((a, b) => a.cutoffRank - b.cutoffRank);
+        //     return eligible;
+        // }
+
+
+
+
+
+
+// function predictColleges(studentName, percentile, examType, branch, categories, linguisticMinority) {
+//     const filteredColleges = collegeData.filter(college => {
+//         // Check if college has the selected branch
+//         if (!college.branches[branch]) return false;
+        
+//         // Check if college has the selected exam type
+//         if (!college.branches[branch][examType]) return false;
+        
+//         // Filter by linguistic minority
+//         if (linguisticMinority !== "ALL" && college.linguisticMinority !== linguisticMinority) {
+//             return false;
+//         }
+        
+//         return true;
+//     });
+    
+//     return filteredColleges;
+// }
+
+// Update your form submission handler to include linguistic minority
+// document.getElementById('predictorForm').addEventListener('submit', function(e) {
+//     e.preventDefault();
+    
+//     const studentName = document.getElementById('studentName').value;
+//     const percentile = parseFloat(document.getElementById('percentile').value);
+//     const examType = document.getElementById('examType').value;
+//     const branch = document.getElementById('branch').value;
+//     const linguisticMinority = document.getElementById('linguisticMinority').value; 
+    
+//     const selectedCategories = Array.from(document.querySelectorAll('.category-checkbox input:checked'))
+//         .map(cb => cb.value);
+    
+//     if (selectedCategories.length === 0) {
+//         alert('Please select at least one category');
+//         return;
+//     }
+    
+    
+//     const results = predictColleges(studentName, percentile, examType, branch, selectedCategories, linguisticMinority);
+    
+  
+// });
+
+ // Event listener for form submission
+document.getElementById('predictorForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const studentName = document.getElementById('studentName').value;
+    const examType = document.getElementById('examType').value;
+    const branch = document.getElementById('branch').value;
+    const percentile = parseFloat(document.getElementById('percentile').value);
+    const linguisticMinority = document.getElementById('linguisticMinority').value;
+
+    const selectedCategories = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
+        .map(cb => cb.value);
+
+    if (selectedCategories.length === 0) {
+        alert('Please select at least one category to check!');
+        return;
+    }
+
+    // Show loading
+    document.getElementById('loading').style.display = 'block';
+    document.getElementById('results').innerHTML = '';
+
+    setTimeout(() => {
+        predictColleges(studentName, examType, branch, percentile, selectedCategories, linguisticMinority);
+        document.getElementById('loading').style.display = 'none';
+    }, 2000);
+});
+
+function predictColleges(studentName, examType, branch, percentile, categories, linguisticMinority) {
+    const resultsDiv = document.getElementById('results');
+    resultsDiv.innerHTML = '';
+
+    // Filter colleges based on linguistic minority
+    let filteredColleges = collegeData;
+    if (linguisticMinority !== 'ALL') {
+        filteredColleges = collegeData.filter(college => 
+            college.linguisticMinority === linguisticMinority
+        );
+    }
+
+    if (filteredColleges.length === 0) {
+        resultsDiv.innerHTML = `
+            <div class="no-results">
+                <h3>No colleges found for the selected linguistic minority: ${linguisticMinority}</h3>
+                <p>Try selecting "All Colleges" or a different minority category.</p>
+            </div>
+        `;
+        return;
+    }
+
+    const results = document.createElement('div');
+    results.className = 'results';
+
+    const header = document.createElement('h2');
+    header.style.textAlign = 'center';
+    header.style.marginBottom = '30px';
+    header.style.color = '#333';
+    
+    let filterText = linguisticMinority === 'ALL' ? 'All Colleges' : `${linguisticMinority} Minority Colleges`;
+    header.innerHTML = `🎯 Admission Predictions for ${studentName}<br><small style="font-size: 0.7em; color: #666;">Filter: ${filterText}</small>`;
+    results.appendChild(header);
+
+    let hasValidResults = false;
+
+    filteredColleges.forEach(college => {
+        const branchData = college.branches[branch];
+        if (!branchData) return;
+
+        const examData = branchData[examType];
+        if (!examData) return;
+
+        hasValidResults = true;
+
+        const collegeCard = document.createElement('div');
+        collegeCard.className = 'college-card';
+
+        // Create the pill container for college name and branch
+        const collegePill = document.createElement('div');
+        collegePill.style.cssText = `
+            background-color: #fee2e2;
+            color: #dc2626;
+            padding: 8px 16px;
+            border-radius: 20px;
+            text-align: center;
+            margin: 20px auto;
+            display: inline-block;
+            font-weight: 500;
+            border: 1px solid #fecaca;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        `;
+
+        // Get branch display name
+        const branchDisplayName = branchData.name || getBranchName(branch);
+        collegePill.innerHTML = `${college.name} - ${branchDisplayName}`;
+        
+        // Add minority badge to the pill
+        const minorityBadge = document.createElement('span');
+        minorityBadge.style.cssText = `
+            background-color: #e0e7ff;
+            color: #3730a3;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.8em;
+            margin-left: 10px;
+        `;
+        minorityBadge.textContent = college.linguisticMinority === 'NON_MINORITY' ? 'Non-Minority' : `${college.linguisticMinority} Minority`;
+        collegePill.appendChild(minorityBadge);
+
+        // Create a container to center the pill
+        const pillContainer = document.createElement('div');
+        pillContainer.style.textAlign = 'center';
+        pillContainer.appendChild(collegePill);
+
+        collegeCard.appendChild(pillContainer);
+
+        // Create cutoff table
+        const table = document.createElement('table');
+        table.className = 'cutoff-table';
+        table.style.cssText = `
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        `;
+
+        // Table header
+        const thead = document.createElement('thead');
+        const headerRow = document.createElement('tr');
+        const headers = ['Round', ...categories.map(cat => getCategoryName(cat)), 'Your Chance'];
+        headers.forEach(header => {
+            const th = document.createElement('th');
+            th.textContent = header;
+            th.style.cssText = `
+                padding: 10px;
+                border: 1px solid #ddd;
+                background-color: #f8f9fa;
+                font-weight: bold;
+                text-align: center;
+            `;
+            headerRow.appendChild(th);
+        });
+        thead.appendChild(headerRow);
+        table.appendChild(thead);
+
+        // Table body
+        const tbody = document.createElement('tbody');
+
+        ['Round1', 'Round2', 'Round3'].forEach(round => {
+            const roundData = examData[round];
+            if (!roundData) return;
+
+            const row = document.createElement('tr');
+
+            // Round name
+            const roundCell = document.createElement('td');
+            roundCell.textContent = round.replace('Round', 'Round ');
+            roundCell.style.cssText = `
+                padding: 10px;
+                border: 1px solid #ddd;
+                font-weight: bold;
+                text-align: center;
+            `;
+            row.appendChild(roundCell);
+
+            // Category cutoffs
+            let hasChance = false;
+            categories.forEach(category => {
+                const cutoff = roundData[category];
+                const cell = document.createElement('td');
+                cell.style.cssText = `
+                    padding: 10px;
+                    border: 1px solid #ddd;
+                    text-align: center;
+                `;
+                
+                if (cutoff !== null && cutoff !== undefined) {
+                    cell.textContent = cutoff.toFixed(4) + '%';
+                    if (percentile >= cutoff) {
+                        hasChance = true;
+                        cell.style.background = '#d4edda';
+                        cell.style.color = '#155724';
+                        cell.style.fontWeight = 'bold';
+                    }
+                } else {
+                    cell.textContent = 'N/A';
+                    cell.style.color = '#6c757d';
+                }
+                row.appendChild(cell);
+            });
+
+            // Admission chance
+            const chanceCell = document.createElement('td');
+            chanceCell.style.cssText = `
+                padding: 10px;
+                border: 1px solid #ddd;
+                text-align: center;
+            `;
+            
+            const chanceSpan = document.createElement('span');
+            chanceSpan.style.cssText = `
+                padding: 4px 8px;
+                border-radius: 12px;
+                font-size: 0.85em;
+                font-weight: bold;
+            `;
+
+            if (hasChance) {
+                chanceSpan.textContent = 'High';
+                chanceSpan.style.background = '#d4edda';
+                chanceSpan.style.color = '#155724';
+            } else {
+                // Check if close to cutoff (within 2 percentile points)
+                let isClose = false;
+                categories.forEach(category => {
+                    const cutoff = roundData[category];
+                    if (cutoff && (cutoff - percentile) <= 2 && (cutoff - percentile) > 0) {
+                        isClose = true;
+                    }
+                });
+
+                if (isClose) {
+                    chanceSpan.textContent = 'Medium';
+                    chanceSpan.style.background = '#fff3cd';
+                    chanceSpan.style.color = '#856404';
+                } else {
+                    chanceSpan.textContent = 'Low';
+                    chanceSpan.style.background = '#f8d7da';
+                    chanceSpan.style.color = '#721c24';
+                }
+            }
+
+            chanceCell.appendChild(chanceSpan);
+            row.appendChild(chanceCell);
+
+            tbody.appendChild(row);
+        });
+
+        table.appendChild(tbody);
+        collegeCard.appendChild(table);
+        results.appendChild(collegeCard);
+    });
+
+    if (!hasValidResults) {
+        results.innerHTML = `
+            <div class="no-results">
+                <h3>No results found</h3>
+                <p>No colleges found for the selected combination of exam type, branch, and linguistic minority.</p>
+            </div>
+        `;
+    }
+
+    resultsDiv.appendChild(results);
+}
+
+function getBranchName(branch) {
+    const branchNames = {
+        'COMPUTERS': 'Computer Engineering',
+        'IT': 'Information Technology',
+        'AIDS': 'Artificial Intelligence & Data Science',
+        'AIML': 'Artificial Intelligence & Machine Learning',
+        'EXTC': 'Electronics & Telecommunication',
+        'ECS': 'Electronics & Computer Science',
+        'MECH': 'Mechanical Engineering',
+        'ELECTRICAL': 'Electrical Engineering',
+        'CIVIL': 'Civil Engineering',
+        'PRODUCTION': 'Production Engineering',
+        'TEXTILE': 'Textile Engineering',
+        'MECHATRONICS': 'Mechatronics',
+        'VLSI': 'VLSI',
+        'CSE_DATA_SCIENCE': 'CSE and Data Science',
+        'ELECTRONICS_VLSI': 'Electronics and VLSI',
+        'CSE_AIML': 'CSE and AIML',
+        'CSE_IOT': 'Computer Science & Engineering (IOT & Cyber Security)',
+        'ELECTRONICS_BIOMEDICAL': 'Electronics & Biomedical Engineering',
+        'AUTOMOBILE': 'Automobile Engineering',
+    };
+    return branchNames[branch] || branch;
+}
+
+function getCategoryName(category) {
+    const categoryNames = {
+        'Open': 'Open',
+        'SC': 'SC',
+        'ST': 'ST',
+        'OBC': 'OBC',
+        'Ladies': 'Ladies',
+        'TFWS': 'TFWS',
+        'EWS': 'EWS',
+        'MI': 'Minority'
+    };
+    return categoryNames[category] || category;
+}
+
+
+    </script>
+</body>
+
+</html>
